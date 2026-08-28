@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comprehensive Headache & Migraine Assessment</title>
+  <title>Clinical Headache & Migraine Assessment</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -12,21 +12,16 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --accent: #38bdf8;
-      --accent-hover: #0284c7;
       --accent-soft: rgba(56, 189, 248, 0.15);
       --table-header-bg: #93c5fd;
       --table-header-text: #0f172a;
-      --success: #34d399;
-      --warning: #fbbf24;
-      --orange: #fb923c;
-      --danger: #f87171;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -35,65 +30,54 @@
       color: var(--text);
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      padding: 20px 12px;
       min-height: 100vh;
-      padding: 24px 12px;
     }
 
     .main-container {
       width: 100%;
-      max-width: 780px;
+      max-width: 680px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 24px 20px;
+      padding: 24px 18px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
-    /* Step Navigation Bar */
+    /* Step Indicators */
     .wizard-nav {
       display: flex;
       justify-content: space-between;
       margin-bottom: 20px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--card-border);
-      overflow-x: auto;
-      gap: 10px;
+      gap: 6px;
     }
-    .wizard-step-label {
-      font-size: 0.8rem;
-      font-weight: 600;
+    .step-badge {
+      font-size: 0.78rem;
+      font-weight: 700;
       color: var(--text-muted);
-      white-space: nowrap;
     }
-    .wizard-step-label.active {
-      color: var(--accent);
-    }
-    .wizard-step-label.completed {
-      color: var(--success);
-    }
+    .step-badge.active { color: var(--accent); }
+    .step-badge.done { color: #34d399; }
 
     /* Page Visibility */
-    .page-step {
-      display: none;
-    }
-    .page-step.active {
-      display: block;
-    }
+    .page-step { display: none; }
+    .page-step.active { display: block; }
 
-    h1, h2 {
-      font-size: 1.3rem;
+    h1 {
+      font-size: 1.25rem;
       margin-bottom: 6px;
       color: #fff;
     }
     .instructions {
       color: var(--text-muted);
       font-size: 0.88rem;
-      line-height: 1.45;
-      margin-bottom: 20px;
+      line-height: 1.4;
+      margin-bottom: 18px;
     }
 
-    /* Page 1 (HIT-6) Styling */
+    /* HIT-6 Form Elements */
     .question-block {
       padding: 14px 0;
       border-bottom: 1px solid var(--card-border);
@@ -102,7 +86,6 @@
       font-weight: 600;
       font-size: 0.92rem;
       margin-bottom: 10px;
-      color: var(--text);
       line-height: 1.4;
     }
     .options-grid {
@@ -120,42 +103,38 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.85rem;
-      color: var(--text);
-      transition: all 0.15s;
     }
-    .option-label input[type="radio"] {
-      accent-color: var(--accent);
-    }
-    .option-label.selected {
+    .option-label:has(input:checked), .option-label.selected {
       background: var(--accent-soft);
       border-color: var(--accent);
       color: #c2e7ff;
       font-weight: 600;
     }
+    .option-label input { accent-color: var(--accent); }
 
-    /* Page 2 (MSQ) Styling */
+    /* MSQ Elements */
     .msq-card {
       background: #0f172a;
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 18px;
-      margin-bottom: 20px;
+      padding: 16px;
+      margin-bottom: 16px;
     }
-    .badge {
+    .domain-tag {
       background: var(--accent-soft);
       color: var(--accent);
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 999px;
+      padding: 4px 8px;
+      border-radius: 6px;
       text-transform: uppercase;
       display: inline-block;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
-    .msq-options {
+    .msq-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
       margin-top: 14px;
     }
     .opt-btn {
@@ -163,8 +142,8 @@
       border: 1px solid var(--card-border);
       color: var(--text);
       border-radius: 8px;
-      padding: 12px;
-      font-size: 0.88rem;
+      padding: 12px 8px;
+      font-size: 0.85rem;
       cursor: pointer;
       text-align: center;
     }
@@ -172,24 +151,24 @@
       background: var(--accent-soft);
       border-color: var(--accent);
       color: #c2e7ff;
-      font-weight: 600;
+      font-weight: 700;
     }
 
-    /* Page 3 (MIDAS + VAS) Styling */
-    .question-row {
+    /* MIDAS Elements */
+    .midas-row {
       display: flex;
       align-items: flex-start;
-      margin-bottom: 14px;
-      font-size: 0.9rem;
+      margin-bottom: 12px;
+      font-size: 0.88rem;
       line-height: 1.4;
       padding: 12px;
       background: #0f172a;
       border-radius: 8px;
       border: 1px solid var(--card-border);
     }
-    .question-row input[type="number"] {
-      width: 65px;
-      padding: 8px;
+    .midas-row input[type="number"] {
+      width: 60px;
+      padding: 8px 4px;
       font-size: 1rem;
       text-align: center;
       border: 1px solid var(--card-border);
@@ -199,25 +178,21 @@
       margin-right: 12px;
       flex-shrink: 0;
     }
-    .vas-container { width: 100%; }
-    .vas-slider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 10px;
+    .vas-slider-box {
+      width: 100%;
     }
-    .vas-slider input[type="range"] {
-      flex-grow: 1;
+    .vas-slider-box input[type="range"] {
+      width: 100%;
+      margin: 10px 0;
       accent-color: var(--accent);
-      cursor: pointer;
     }
 
-    /* Action Buttons */
-    .nav-actions {
+    /* Navigation Buttons */
+    .btn-row {
       display: flex;
       justify-content: space-between;
-      margin-top: 24px;
-      padding-top: 16px;
+      margin-top: 20px;
+      padding-top: 14px;
       border-top: 1px solid var(--card-border);
     }
     .btn {
@@ -226,319 +201,20 @@
       font-weight: 700;
       border: none;
       border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 0.95rem;
+      padding: 10px 18px;
+      font-size: 0.9rem;
       cursor: pointer;
     }
-    .btn-secondary {
+    .btn-sec {
       background: transparent;
       color: var(--text-muted);
       border: 1px solid var(--card-border);
     }
 
-    /* Page 4: Results Table */
-    .results-table-wrap {
+    /* Summary Table */
+    .table-container {
       width: 100%;
       overflow-x: auto;
-      margin-top: 16px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-    }
-    table.report-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
-      background: #111827;
-      text-align: left;
-    }
-    table.report-table th {
-      background-color: var(--table-header-bg);
-      color: var(--table-header-text);
-      font-weight: 700;
-      padding: 12px 14px;
-    }
-    table.report-table td {
-      padding: 14px;
-      border-bottom: 1px solid #1f2937;
-      vertical-align: top;
-      color: #e5e7eb;
-    }
-    table.report-table tr:last-child td { border-bottom: none; }
-    .cell-bold { font-weight: 700; color: #fff; }
-    .cell-score { font-weight: 700; color: #f1f5f9; }
-  </style>
-</head>
-<body>
-
-<div class="main-container">
-
-  <div class="wizard-nav">
-    <div class="wizard-step-label active" id="badge-1">1. HIT-6™</div>
-    <div class="wizard-step-label" id="badge-2">2. MSQ</div>
-    <div class="wizard-step-label" id="badge-3">3. MIDAS &amp; VAS</div>
-    <div class="wizard-step-label" id="badge-4">4. Final Report</div>
-  </div>
-
-  <div class="page-step active" id="step-1">
-    <h1>HIT-6™ Headache Impact Test</h1>
-    <p class="instructions">Select one option for each question to assess headache impact on your daily life.</p>
-    
-    <div id="hit6Container">
-      <div class="question-block">
-        <div class="question-title">1. When you have headaches, how often is the pain severe?</div>
-        <div class="options-grid">
-          <label class="option-label"><input type="radio" name="hit_q1" value="6"> Never (6)</label>
-          <label class="option-label"><input type="radio" name="hit_q1" value="8"> Rarely (8)</label>
-          <label class="option-label"><input type="radio" name="hit_q1" value="10"> Sometimes (10)</label>
-          <label class="option-label"><input type="radio" name="hit_q1" value="11"> Very Often (11)</label>
-          <label class="option-label"><input type="radio" name="hit_q1" value="13"> Always (13)</label>
-        </div>
-      </div>
-      <div class="question-block">
-        <div class="question-title">2. How often do headaches limit your ability to do usual daily activities?</div>
-        <div class="options-grid">
-          <label class="option-label"><input type="radio" name="hit_q2" value="6"> Never (6)</label>
-          <label class="option-label"><input type="radio" name="hit_q2" value="8"> Rarely (8)</label>
-          <label class="option-label"><input type="radio" name="hit_q2" value="10"> Sometimes (10)</label>
-          <label class="option-label"><input type="radio" name="hit_q2" value="11"> Very Often (11)</label>
-          <label class="option-label"><input type="radio" name="hit_q2" value="13"> Always (13)</label>
-        </div>
-      </div>
-      <div class="question-block">
-        <div class="question-title">3. When you have a headache, how often do you wish you could lie down?</div>
-        <div class="options-grid">
-          <label class="option-label"><input type="radio" name="hit_q3" value="6"> Never (6)</label>
-          <label class="option-label"><input type="radio" name="hit_q3" value="8"> Rarely (8)</label>
-          <label class="option-label"><input type="radio" name="hit_q3" value="10"> Sometimes (10)</label>
-          <label class="option-label"><input type="radio" name="hit_q3" value="11"> Very Often (11)</label>
-          <label class="option-label"><input type="radio" name="hit_q3" value="13"> Always (13)</label>
-        </div>
-      </div>
-      <div class="question-block">
-        <div class="question-title">4. In the past 4 weeks, how often have you felt too tired to work or do daily activities?</div>
-        <div class="options-grid">
-          <label class="option-label"><input type="radio" name="hit_q4" value="6"> Never (6)</label>
-          <label class="option-label"><input type="radio" name="hit_q4" value="8"> Rarely (8)</label>
-          <label class="option-label"><input type="radio" name="hit_q4" value="10"> Sometimes (10)</label>
-          <label class="option-label"><input type="radio" name="hit_q4" value="11"> Very Often (11)</label>
-          <label class="option-label"><input type="radio" name="hit_q4" value="13"> Always (13)</label>
-        </div>
-      </div>
-      <div class="question-block">
-        <div class="question-title">5. In the past 4 weeks, how often have you felt fed up or irritated because of headaches?</div>
-        <div class="options-grid">
-          <label class="option-label"><input type="radio" name="hit_q5" value="6"> Never (6)</label>
-          <label class="option-label"><input type="radio" name="hit_q5" value="8"> Rarely (8)</label>
-          <label class="option-label"><input type="radio" name="hit_q5" value="10"> Sometimes (10)</label>
-          <label class="option-label"><input type="radio" name="hit_q5" value="11"> Very Often (11)</label>
-          <label class="option-label"><input type="radio" name="hit_q5" value="13"> Always (13)</label>
-        </div>
-      </div>
-      <div class="question-block">
-        <div class="question-title">6. In the past 4 weeks, how often did headaches limit your ability to concentrate?</div>
-        <div class="options-grid">
-          <label class="option-label"><input type="radio" name="hit_q6" value="6"> Never (6)</label>
-          <label class="option-label"><input type="radio" name="hit_q6" value="8"> Rarely (8)</label>
-          <label class="option-label"><input type="radio" name="hit_q6" value="10"> Sometimes (10)</label>
-          <label class="option-label"><input type="radio" name="hit_q6" value="11"> Very Often (11)</label>
-          <label class="option-label"><input type="radio" name="hit_q6" value="13"> Always (13)</label>
-        </div>
-      </div>
-    </div>
-
-    <div class="nav-actions">
-      <div></div>
-      <button type="button" class="btn" id="toStep2Btn">Next: MSQ &rarr;</button>
-    </div>
-  </div>
-
-  <div class="page-step" id="step-2">
-    <h1>MSQ (Migraine-Specific Quality of Life)</h1>
-    <p class="instructions">Select one response for each item describing the past 4 weeks.</p>
-
-    <div class="msq-card">
-      <span class="badge" id="msqDomainBadge">Role-Restrictive</span>
-      <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;" id="msqCount">Question 1 of 14</div>
-      <div class="question-title" id="msqQuestionText" style="min-height: 48px;">Loading question...</div>
-      <div class="msq-options" id="msqOptionsGrid"></div>
-    </div>
-
-    <div class="nav-actions">
-      <button type="button" class="btn btn-secondary" onclick="prevMSQItem()">&larr; Back</button>
-      <button type="button" class="btn" id="msqNextBtn" onclick="nextMSQItem()">Next Question &rarr;</button>
-    </div>
-  </div>
-
-  <div class="page-step" id="step-3">
-    <h1>MIDAS &amp; Pain Intensity (VAS)</h1>
-    <p class="instructions">Answer the questions based on the last 3 months.</p>
-
-    <div class="question-row">
-      <input type="number" id="midas_q1" min="0" value="0">
-      <div><b>1.</b> On how many days in the last 3 months did you miss work or school because of your headaches?</div>
-    </div>
-
-    <div class="question-row">
-      <input type="number" id="midas_q2" min="0" value="0">
-      <div><b>2.</b> How many days was productivity at work/school reduced by half or more?</div>
-    </div>
-
-    <div class="question-row">
-      <input type="number" id="midas_q3" min="0" value="0">
-      <div><b>3.</b> On how many days did you not do household work because of headaches?</div>
-    </div>
-
-    <div class="question-row">
-      <input type="number" id="midas_q4" min="0" value="0">
-      <div><b>4.</b> How many days was household productivity reduced by half or more?</div>
-    </div>
-
-    <div class="question-row">
-      <input type="number" id="midas_q5" min="0" value="0">
-      <div><b>5.</b> On how many days did you miss family, social, or leisure activities?</div>
-    </div>
-
-    <div class="question-row">
-      <input type="number" id="midas_qa" min="0" value="0">
-      <div><b>A.</b> Total days you had a headache in the last 3 months?</div>
-    </div>
-
-    <div class="question-row">
-      <div class="vas-container">
-        <div><b>B. VAS Pain Intensity:</b> Average headache pain intensity (0-10)? <b>[Selected: <span id="vas-val-display" style="color:var(--accent);">5</span>/10]</b></div>
-        <div class="vas-slider">
-          <span style="font-size: 0.8rem;">0</span>
-          <input type="range" id="vas_slider" min="0" max="10" value="5" oninput="document.getElementById('vas-val-display').innerText = this.value">
-          <span style="font-size: 0.8rem;">10</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="nav-actions">
-      <button type="button" class="btn btn-secondary" onclick="goToStep(2)">&larr; Back to MSQ</button>
-      <button type="button" class="btn" onclick="calculateAndShowReport()">Generate Summary &rarr;</button>
-    </div>
-  </div>
-
-  <div class="page-step" id="step-4">
-    <h1>Clinical Assessment Results</h1>
-    <p class="instructions">Calculated scores and clinical interpretations compiled across all completed modules.</p>
-
-    <div class="results-table-wrap">
-      <table class="report-table">
-        <thead>
-          <tr>
-            <th style="width: 20%;">Assessment / Tool</th>
-            <th style="width: 30%;">Full Name / Description</th>
-            <th style="width: 18%;">Score / Result</th>
-            <th style="width: 32%;">Clinical Interpretation</th>
-          </tr>
-        </thead>
-        <tbody id="summaryTableBody">
-        </tbody>
-      </table>
-    </div>
-
-    <div class="nav-actions">
-      <button type="button" class="btn btn-secondary" onclick="goToStep(1)">Retake</button>
-      <button type="button" class="btn" onclick="window.print()">Print / PDF</button>
-    </div>
-  </div>
-
-</div>
-
-<script>
-  let currentStep = 1;
-
-  // Visual selection handler for HIT-6
-  document.querySelectorAll('#hit6Container .option-label').forEach(lbl => {
-    lbl.addEventListener('click', () => {
-      const radio = lbl.querySelector('input');
-      const groupName = radio.name;
-      document.querySelectorAll(`input[name="${groupName}"]`).forEach(r => {
-        r.closest('.option-label').classList.toggle('selected', r === radio);
-      });
-    });
-  });
-
-  // Explicit event listener for Step 1 -> Step 2
-  document.getElementById('toStep2Btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    let missing = [];
-    for (let i = 1; i <= 6; i++) {
-      const picked = document.querySelector(`input[name="hit_q${i}"]:checked`);
-      if (!picked) missing.push(i);
-    }
-    if (missing.length > 0) {
-      alert("Please select an answer for question(s): " + missing.join(", "));
-      return;
-    }
-    goToStep(2);
-  });
-
-  /* --- MSQ LOGIC --- */
-  const msqQuestions = [
-    { text: "1. How often have migraines interfered with how well you dealt with family, friends and others who are close to you?", domain: "Role-Restrictive" },
-    { text: "2. How often have migraines interrupted with your leisure time activities such as reading or exercising?", domain: "Role-Restrictive" },
-    { text: "3. How often have you had difficulty in performing work or other daily activities?", domain: "Role-Restrictive" },
-    { text: "4. How often have migraines kept you from getting as much accomplished as you normally do at work or at home?", domain: "Role-Restrictive" },
-    { text: "5. How often have migraines limited your ability to work or do other activities as carefully as you usually do them?", domain: "Role-Restrictive" },
-    { text: "6. How often have you had to cancel or delay work or social activities because you were exhausted?", domain: "Role-Restrictive" },
-    { text: "7. How often have migraines left you with limited energy levels?", domain: "Role-Restrictive" },
-    { text: "8. How often have you had to stop work or other activities?", domain: "Role-Preventive" },
-    { text: "9. How often have you needed the help of other people in handling routine tasks when you had a migraine attack?", domain: "Role-Preventive" },
-    { text: "10. How often have you avoided social or family activities to treat your migraine attacks?", domain: "Role-Preventive" },
-    { text: "11. How often has it been difficult for you to go to social events such as parties?", domain: "Role-Preventive" },
-    { text: "12. How often have you felt fed up or frustrated?", domain: "Emotional Function" },
-    { text: "13. How often have you felt like you were a burden on others?", domain: "Emotional Function" },
-    { text: "14. How often have you been afraid of letting others down?", domain: "Emotional Function" }
-  ];
-
-  const msqScale = [
-    { label: "None of the time", val: 1 },
-    { label: "A little bit", val: 2 },
-    { label: "Some of the time", val: 3 },
-    { label: "A good bit", val: 4 },
-    { label: "Most of the time", val: 5 },
-    { label: "All of the time", val: 6 }
-  ];
-
-  let msqIdx = 0;
-  const msqAnswers = Array(msqQuestions.length).fill(null);
-
-  function renderMSQ() {
-    const q = msqQuestions[msqIdx];
-    document.getElementById("msqDomainBadge").innerText = q.domain;
-    document.getElementById("msqCount").innerText = `Question ${msqIdx + 1} of ${msqQuestions.length}`;
-    document.getElementById("msqQuestionText").innerText = q.text;
-
-    const optGrid = document.getElementById("msqOptionsGrid");
-    optGrid.innerHTML = "";
-
-    msqScale.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = `opt-btn ${msqAnswers[msqIdx] === opt.val ? 'active' : ''}`;
-      btn.innerText = opt.label;
-      btn.onclick = () => {
-        msqAnswers[msqIdx] = opt.val;
-        renderMSQ();
-        setTimeout(() => {
-          if (msqIdx < msqQuestions.length - 1) {
-            msqIdx++;
-            renderMSQ();
-          } else {
-            goToStep(3);
-          }
-        }, 120);
-      };
-      optGrid.appendChild(btn);
-    });
-
-    document.getElementById("msqNextBtn").innerText = (msqIdx === msqQuestions.length - 1) ? "Proceed to MIDAS &rarr;" : "Next Question &rarr;";
-  }
-
-  function prevMSQItem() {
-    if (msqIdx > 0) {
-      msqIdx--;
-      rend
+      margin-top: 14px;
+      border: 1px solid
+      
