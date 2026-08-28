@@ -3,50 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ICHD-3 Migraine Diagnostic Criteria</title>
+  <title>ICHD-3 Migraine Diagnostic Tool</title>
   <style>
-    :root {
-      --bg-color: #f4f6f8;
-      --card-bg: #ffffff;
-      --text-main: #2d3748;
-      --text-muted: #718096;
-      --green-header: #356b55;
-      --green-border: #4e8c73;
-      --gold-header: #b5934b;
-      --gold-border: #cbb075;
-      --success: #27ae60;
-      --neutral: #e2e8f0;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
+      background-color: #f8fafc;
+      color: #1e293b;
       padding: 24px 16px;
-      margin: 0;
+      display: flex;
+      justify-content: center;
     }
 
     .container {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    header {
-      margin-bottom: 24px;
-    }
-
-    .subtitle {
-      font-size: 14px;
-      color: #927541;
-      font-weight: 600;
-      margin-bottom: 4px;
+      width: 100%;
+      max-width: 900px;
     }
 
     h1 {
-      font-size: 22px;
-      margin: 0;
-      color: #222;
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
+
+    .result-banner {
+      background: #e2e8f0;
+      border: 2px solid #cbd5e1;
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 16px;
       font-weight: 700;
+      margin-bottom: 24px;
+      transition: all 0.2s ease;
+    }
+
+    .result-banner.active-without {
+      background: #dcfce7;
+      border-color: #16a34a;
+      color: #166534;
+    }
+
+    .result-banner.active-with {
+      background: #fef9c3;
+      border-color: #ca8a04;
+      color: #854d0e;
+    }
+
+    .result-banner.active-both {
+      background: #dbeafe;
+      border-color: #2563eb;
+      color: #1e40af;
     }
 
     .grid {
@@ -61,296 +74,206 @@
       }
     }
 
-    .panel {
-      background: var(--card-bg);
-      border-radius: 16px;
-      padding: 24px;
-      border: 2px solid var(--neutral);
-      position: relative;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      transition: border-color 0.2s;
-    }
-
-    .panel.without-aura {
-      border-color: var(--green-border);
-    }
-
-    .panel.with-aura {
-      border-color: var(--gold-border);
-    }
-
-    .panel-badge {
-      display: inline-block;
-      color: #fff;
-      font-weight: 600;
-      font-size: 15px;
-      padding: 6px 18px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-    }
-
-    .without-aura .panel-badge {
-      background-color: var(--green-header);
-    }
-
-    .with-aura .panel-badge {
-      background-color: var(--gold-header);
-    }
-
-    .criterion-group {
-      margin-bottom: 16px;
-    }
-
-    .criterion-title {
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 8px;
+    .section {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .criterion-title input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: #3182ce;
-      cursor: pointer;
+    .section.without {
+      border-top: 4px solid #356b55;
     }
 
-    .sub-list {
-      margin-left: 24px;
+    .section.with {
+      border-top: 4px solid #b5934b;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .section.without .section-title {
+      color: #356b55;
+    }
+
+    .section.with .section-title {
+      color: #b5934b;
+    }
+
+    .criterion {
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
 
     label {
-      font-size: 13.5px;
-      color: #4a5568;
+      font-size: 14px;
+      line-height: 1.4;
       cursor: pointer;
       display: flex;
       align-items: flex-start;
       gap: 8px;
-      line-height: 1.4;
     }
 
-    label input[type="checkbox"] {
-      margin-top: 2px;
-      accent-color: #3182ce;
+    input[type="checkbox"] {
+      margin-top: 3px;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
     }
 
-    .status-bar {
-      margin-top: 20px;
-      padding: 12px 16px;
-      border-radius: 8px;
+    .sub-group {
+      margin-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .group-label {
       font-size: 14px;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #edf2f7;
-      color: #4a5568;
-    }
-
-    .status-bar.fulfilled {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .btn-reset {
-      background: none;
-      border: 1px solid #cbd5e0;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      color: #4a5568;
-    }
-
-    .btn-reset:hover {
-      background: #e2e8f0;
-    }
-
-    footer {
-      margin-top: 24px;
-      font-size: 11px;
-      color: var(--text-muted);
-      line-height: 1.5;
+      margin-bottom: 2px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <header>
-      <div class="subtitle">Migraine</div>
-      <h1>ICHD-3 diagnostic criteria – episodic migraine with/without aura</h1>
-    </header>
+<div class="container">
+  <h1>ICHD-3 diagnostic criteria – episodic migraine with/without aura</h1>
 
-    <div class="grid">
-      <!-- 1.1 Migraine without aura -->
-      <div class="panel without-aura" id="panel-without">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <div class="panel-badge">1.1 Migraine without aura</div>
-          <button class="btn-reset" onclick="resetGroup('without')">Clear</button>
-        </div>
+  <div class="result-banner" id="result-display">Result: Criteria not yet fulfilled</div>
 
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <label><input type="checkbox" id="w_crit_A" onchange="evaluateWithoutAura()"> <strong>A.</strong> At least 5 attacks fulfilling criteria B–D</label>
-          </div>
-        </div>
+  <div class="grid">
+    <!-- Migraine without aura -->
+    <div class="section without">
+      <div class="section-title">1.1 Migraine without aura</div>
 
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <label><input type="checkbox" id="w_crit_B" onchange="evaluateWithoutAura()"> <strong>B.</strong> Headache attacks lasting 4–72 hours (untreated or unsuccessfully treated)</label>
-          </div>
-        </div>
-
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <strong>C.</strong> Headache has at least 2 of 4 characteristics: (<span id="count-w-c">0</span>/2)
-          </div>
-          <div class="sub-list">
-            <label><input type="checkbox" class="w-c" onchange="evaluateWithoutAura()"> 1. Unilateral location</label>
-            <label><input type="checkbox" class="w-c" onchange="evaluateWithoutAura()"> 2. Pulsating quality</label>
-            <label><input type="checkbox" class="w-c" onchange="evaluateWithoutAura()"> 3. Moderate or severe pain intensity</label>
-            <label><input type="checkbox" class="w-c" onchange="evaluateWithoutAura()"> 4. Aggravation by or causing avoidance of routine physical activity</label>
-          </div>
-        </div>
-
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <strong>D.</strong> During headache at least 1 of the following: (<span id="count-w-d">0</span>/1)
-          </div>
-          <div class="sub-list">
-            <label><input type="checkbox" class="w-d" onchange="evaluateWithoutAura()"> 1. Nausea and/or vomiting</label>
-            <label><input type="checkbox" class="w-d" onchange="evaluateWithoutAura()"> 2. Photophobia and phonophobia</label>
-          </div>
-        </div>
-
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <label><input type="checkbox" id="w_crit_E" onchange="evaluateWithoutAura()"> <strong>E.</strong> Not better accounted for by another ICHD-3 diagnosis</label>
-          </div>
-        </div>
-
-        <div class="status-bar" id="status-without">Criteria not met</div>
+      <div class="criterion">
+        <label>
+          <input type="checkbox" id="wo_a" onchange="checkDiagnosis()" />
+          <span><strong>A.</strong> At least 5 attacks fulfilling criteria B–D</span>
+        </label>
       </div>
 
-      <!-- 1.2 Migraine with aura -->
-      <div class="panel with-aura" id="panel-with">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <div class="panel-badge">1.2 Migraine with aura</div>
-          <button class="btn-reset" onclick="resetGroup('with')">Clear</button>
-        </div>
+      <div class="criterion">
+        <label>
+          <input type="checkbox" id="wo_b" onchange="checkDiagnosis()" />
+          <span><strong>B.</strong> Headache attacks lasting 4–72 hours (when untreated or unsuccessfully treated)</span>
+        </label>
+      </div>
 
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <label><input type="checkbox" id="wa_crit_A" onchange="evaluateWithAura()"> <strong>A.</strong> At least 2 attacks fulfilling criteria B and C</label>
-          </div>
+      <div class="criterion">
+        <div class="group-label"><strong>C.</strong> Headache has at least 2 of the following 4 characteristics:</div>
+        <div class="sub-group">
+          <label><input type="checkbox" class="wo_c" onchange="checkDiagnosis()" /> 1. Unilateral location</label>
+          <label><input type="checkbox" class="wo_c" onchange="checkDiagnosis()" /> 2. Pulsating quality</label>
+          <label><input type="checkbox" class="wo_c" onchange="checkDiagnosis()" /> 3. Moderate or severe pain intensity</label>
+          <label><input type="checkbox" class="wo_c" onchange="checkDiagnosis()" /> 4. Aggravation by or causing avoidance of routine physical activity</label>
         </div>
+      </div>
 
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <strong>B.</strong> At least 1 fully reversible aura symptom: (<span id="count-wa-b">0</span>/1)
-          </div>
-          <div class="sub-list">
-            <label><input type="checkbox" class="wa-b" onchange="evaluateWithAura()"> 1. Visual</label>
-            <label><input type="checkbox" class="wa-b" onchange="evaluateWithAura()"> 2. Sensory</label>
-            <label><input type="checkbox" class="wa-b" onchange="evaluateWithAura()"> 3. Speech and/or language</label>
-            <label><input type="checkbox" class="wa-b" onchange="evaluateWithAura()"> 4. Motor</label>
-            <label><input type="checkbox" class="wa-b" onchange="evaluateWithAura()"> 5. Brainstem</label>
-            <label><input type="checkbox" class="wa-b" onchange="evaluateWithAura()"> 6. Retinal</label>
-          </div>
+      <div class="criterion">
+        <div class="group-label"><strong>D.</strong> During headache at least 1 of the following:</div>
+        <div class="sub-group">
+          <label><input type="checkbox" class="wo_d" onchange="checkDiagnosis()" /> 1. Nausea and/or vomiting</label>
+          <label><input type="checkbox" class="wo_d" onchange="checkDiagnosis()" /> 2. Photophobia and phonophobia</label>
         </div>
+      </div>
 
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <strong>C.</strong> At least 3 of 6 characteristics: (<span id="count-wa-c">0</span>/3)
-          </div>
-          <div class="sub-list">
-            <label><input type="checkbox" class="wa-c" onchange="evaluateWithAura()"> 1. At least 1 symptom spreads gradually over ≥5 minutes</label>
-            <label><input type="checkbox" class="wa-c" onchange="evaluateWithAura()"> 2. 2 or more aura symptoms occur in succession</label>
-            <label><input type="checkbox" class="wa-c" onchange="evaluateWithAura()"> 3. Each individual aura symptom lasts 5–60 minutes</label>
-            <label><input type="checkbox" class="wa-c" onchange="evaluateWithAura()"> 4. At least 1 aura symptom is unilateral</label>
-            <label><input type="checkbox" class="wa-c" onchange="evaluateWithAura()"> 5. At least 1 aura symptom is positive</label>
-            <label><input type="checkbox" class="wa-c" onchange="evaluateWithAura()"> 6. Aura accompanied or followed within 60 min by headache</label>
-          </div>
-        </div>
-
-        <div class="criterion-group">
-          <div class="criterion-title">
-            <label><input type="checkbox" id="wa_crit_D" onchange="evaluateWithAura()"> <strong>D.</strong> Not better accounted for by another ICHD-3 diagnosis</label>
-          </div>
-        </div>
-
-        <div class="status-bar" id="status-with">Criteria not met</div>
+      <div class="criterion">
+        <label>
+          <input type="checkbox" id="wo_e" onchange="checkDiagnosis()" />
+          <span><strong>E.</strong> Not better accounted for by another ICHD-3 diagnosis</span>
+        </label>
       </div>
     </div>
 
-    <footer>
-      ICHD-3 = International Classification of Headache Disorders, 3rd edition.<br>
-      Headache Classification Committee of the International Headache Society (IHS). Cephalalgia 2018;38(1):1–211.
-    </footer>
+    <!-- Migraine with aura -->
+    <div class="section with">
+      <div class="section-title">1.2 Migraine with aura</div>
+
+      <div class="criterion">
+        <label>
+          <input type="checkbox" id="w_a" onchange="checkDiagnosis()" />
+          <span><strong>A.</strong> At least 2 attacks fulfilling criteria B and C</span>
+        </label>
+      </div>
+
+      <div class="criterion">
+        <div class="group-label"><strong>B.</strong> At least 1 of the following fully reversible aura symptoms:</div>
+        <div class="sub-group">
+          <label><input type="checkbox" class="w_b" onchange="checkDiagnosis()" /> 1. Visual</label>
+          <label><input type="checkbox" class="w_b" onchange="checkDiagnosis()" /> 2. Sensory</label>
+          <label><input type="checkbox" class="w_b" onchange="checkDiagnosis()" /> 3. Speech and/or language</label>
+          <label><input type="checkbox" class="w_b" onchange="checkDiagnosis()" /> 4. Motor</label>
+          <label><input type="checkbox" class="w_b" onchange="checkDiagnosis()" /> 5. Brainstem</label>
+          <label><input type="checkbox" class="w_b" onchange="checkDiagnosis()" /> 6. Retinal</label>
+        </div>
+      </div>
+
+      <div class="criterion">
+        <div class="group-label"><strong>C.</strong> At least 3 of the following 6 characteristics:</div>
+        <div class="sub-group">
+          <label><input type="checkbox" class="w_c" onchange="checkDiagnosis()" /> 1. At least 1 aura symptom spreads gradually over ≥5 minutes</label>
+          <label><input type="checkbox" class="w_c" onchange="checkDiagnosis()" /> 2. 2 or more aura symptoms occur in succession</label>
+          <label><input type="checkbox" class="w_c" onchange="checkDiagnosis()" /> 3. Each individual aura symptom lasts 5–60 minutes</label>
+          <label><input type="checkbox" class="w_c" onchange="checkDiagnosis()" /> 4. At least 1 aura symptom is unilateral</label>
+          <label><input type="checkbox" class="w_c" onchange="checkDiagnosis()" /> 5. At least 1 aura symptom is positive</label>
+          <label><input type="checkbox" class="w_c" onchange="checkDiagnosis()" /> 6. The aura is accompanied, or followed within 60 minutes, by headache</label>
+        </div>
+      </div>
+
+      <div class="criterion">
+        <label>
+          <input type="checkbox" id="w_d" onchange="checkDiagnosis()" />
+          <span><strong>D.</strong> Not better accounted for by another ICHD-3 diagnosis</span>
+        </label>
+      </div>
+    </div>
   </div>
+</div>
 
-  <script>
-    function countChecked(selector) {
-      return document.querySelectorAll(`${selector}:checked`).length;
+<script>
+  function countChecked(selector) {
+    return document.querySelectorAll(`${selector}:checked`).length;
+  }
+
+  function checkDiagnosis() {
+    const withoutA = document.getElementById('wo_a').checked;
+    const withoutB = document.getElementById('wo_b').checked;
+    const withoutC = countChecked('.wo_c') >= 2;
+    const withoutD = countChecked('.wo_d') >= 1;
+    const withoutE = document.getElementById('wo_e').checked;
+    const hasWithoutAura = withoutA && withoutB && withoutC && withoutD && withoutE;
+
+    const withA = document.getElementById('w_a').checked;
+    const withB = countChecked('.w_b') >= 1;
+    const withC = countChecked('.w_c') >= 3;
+    const withD = document.getElementById('w_d').checked;
+    const hasWithAura = withA && withB && withC && withD;
+
+    const banner = document.getElementById('result-display');
+    banner.className = 'result-banner';
+
+    if (hasWithoutAura && hasWithAura) {
+      banner.textContent = 'Result: Criteria met for BOTH Migraine with and without aura';
+      banner.classList.add('active-both');
+    } else if (hasWithoutAura) {
+      banner.textContent = 'Result: 1.1 Migraine without aura criteria MET';
+      banner.classList.add('active-without');
+    } else if (hasWithAura) {
+      banner.textContent = 'Result: 1.2 Migraine with aura criteria MET';
+      banner.classList.add('active-with');
+    } else {
+      banner.textContent = 'Result: Criteria not yet fulfilled';
     }
+  }
+</script>
 
-    function evaluateWithoutAura() {
-      const a = document.getElementById('w_crit_A').checked;
-      const b = document.getElementById('w_crit_B').checked;
-      const cCount = countChecked('.w-c');
-      const dCount = countChecked('.w-d');
-      const e = document.getElementById('w_crit_E').checked;
-
-      document.getElementById('count-w-c').textContent = cCount;
-      document.getElementById('count-w-d').textContent = dCount;
-
-      const statusBar = document.getElementById('status-without');
-      if (a && b && cCount >= 2 && dCount >= 1 && e) {
-        statusBar.textContent = '✓ 1.1 Migraine without aura criteria MET';
-        statusBar.classList.add('fulfilled');
-      } else {
-        statusBar.textContent = 'Criteria not met';
-        statusBar.classList.remove('fulfilled');
-      }
-    }
-
-    function evaluateWithAura() {
-      const a = document.getElementById('wa_crit_A').checked;
-      const bCount = countChecked('.wa-b');
-      const cCount = countChecked('.wa-c');
-      const d = document.getElementById('wa_crit_D').checked;
-
-      document.getElementById('count-wa-b').textContent = bCount;
-      document.getElementById('count-wa-c').textContent = cCount;
-
-      const statusBar = document.getElementById('status-with');
-      if (a && bCount >= 1 && cCount >= 3 && d) {
-        statusBar.textContent = '✓ 1.2 Migraine with aura criteria MET';
-        statusBar.classList.add('fulfilled');
-      } else {
-        statusBar.textContent = 'Criteria not met';
-        statusBar.classList.remove('fulfilled');
-      }
-    }
-
-    function resetGroup(group) {
-      if (group === 'without') {
-        document.querySelectorAll('#panel-without input[type="checkbox"]').forEach(cb => cb.checked = false);
-        evaluateWithoutAura();
-      } else {
-        document.querySelectorAll('#panel-with input[type="checkbox"]').forEach(cb => cb.checked = false);
-        evaluateWithAura();
-      }
-    }
-  </script>
 </body>
 </html>
-
