@@ -1,125 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MSQ Interactive Visual</title>
-<style>
-  body {
-    background: #121212;
-    color: #e0e0e0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 20px 12px;
-  }
-  .card {
-    background: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 20px;
-    max-width: 440px;
-    width: 100%;
-    padding: 24px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-  }
-  .header-tag {
-    color: #8ab4f8;
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .question {
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin: 12px 0 20px 0;
-    min-height: 54px;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  .btn {
-    background: #2a2a2a;
-    color: #fff;
-    border: 1px solid #444;
-    border-radius: 12px;
-    padding: 12px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: 0.15s;
-  }
-  .btn:hover { background: #383838; border-color: #8ab4f8; }
-  .btn.active { background: #1a3a60; border-color: #8ab4f8; color: #8ab4f8; font-weight: bold; }
-  .footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #2d2d2d;
-    padding-top: 14px;
-  }
-  .score-display {
-    font-size: 0.85rem;
-    color: #aaa;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSQ Migraine Severity Assessment</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+      --card-border: #2d2d2d;
+      --text: #f0f4f9;
+      --text-muted: #9aa0a6;
+      --accent: #8ab4f8;
+      --grade1: #34d399;
+      --grade2: #38bdf8;
+      --grade3: #fbbf24;
+      --grade4: #f87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Survey View */
+    .survey-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      background: rgba(138, 180, 248, 0.15);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--card-border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 7%;
+      transition: width 0.3s ease;
+    }
+
+    .question-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.45;
+      min-height: 56px;
+      margin-bottom: 20px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .opt-btn {
+      background: #282a2c;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+
+    .opt-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .opt-btn.active {
+      background: #004a77;
+      border-color: var(--accent);
+      color: #c2e7ff;
+      font-weight: 600;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--card-border);
+      padding-top: 16px;
+    }
+
+    .btn-nav {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Results View & Severity Table */
+    .results-view {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .results-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--accent);
+    }
+
+    .score-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .score-card {
+      background: #282a2c;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid var(--card-border);
+    }
+
+    .score-card .val {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 4px 0;
+    }
+
+    .score-card .lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Severity Table Styling */
+    .severity-table-wrap {
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+
+    table.severity-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+
+    table.severity-table th, table.severity-table td {
+      padding: 10px 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    table.severity-table th {
+      background-color: #282a2c;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .badge-grade {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .g1 { background: rgba(52, 211, 153, 0.15); color: var(--grade1); }
+    .g2 { background: rgba(56, 189, 248, 0.15); color: var(--grade2); }
+    .g3 { background: rgba(251, 191, 36, 0.15); color: var(--grade3); }
+    .g4 { background: rgba(248, 113, 113, 0.15); color: var(--grade4); }
+
+    .btn-restart {
+      background: var(--accent);
+      color: #121212;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-<div class="card">
-  <div class="header-tag" id="domainTag">Role-Restrictive (Q1/14)</div>
-  <div class="question" id="qText">1. How often have migraines interfered with how well you dealt with family, friends and others who are close to you?</div>
-  
-  <div class="grid" id="optGrid"></div>
+<div class="container">
+  <!-- Questionnaire Stage -->
+  <div id="surveyStage">
+    <div class="survey-header">
+      <span class="badge" id="domainBadge">Role Restrictive</span>
+      <span style="font-size: 0.85rem; color: var(--text-muted);" id="qCount">1 of 14</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="question-title" id="questionText">Loading question...</div>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="nav-buttons">
+      <button class="btn-nav" id="prevBtn" onclick="navigate(-1)">Previous</button>
+      <button class="btn-nav" id="nextBtn" onclick="navigate(1)">Next</button>
+    </div>
+  </div>
 
-  <div class="footer">
-    <button class="btn" onclick="prevQ()" id="prevBtn" style="padding: 6px 14px;">Previous</button>
-    <div class="score-display" id="progressText">1 / 14</div>
-    <button class="btn" onclick="nextQ()" id="nextBtn" style="padding: 6px 14px;">Next</button>
+  <!-- Results & Severity Interpretation Table Stage -->
+  <div class="results-view" id="resultsStage">
+    <div class="results-title">Assessment Results & Severity Matrix</div>
+
+    <!-- Calculated Score Cards -->
+    <div class="score-summary-grid">
+      <div class="score-card">
+        <div class="lbl">Restrictive</div>
+        <div class="val" id="resVal">0</div>
+        <div class="lbl" id="resGrade">Grade 1</div>
+      </div>
+      <div class="score-card">
+        <div class="lbl">Preventive</div>
+        <div class="val" id="prevVal">0</div>
+        <div class="lbl" id="prevGrade">Grade 1</div>
+      </div>
+      <div class="score-card">
+        <div class="lbl">Emotional</div>
+        <div class="val" id="emVal">0</div>
+        <div class="lbl" id="emGrade">Grade 1</div>
+      </div>
+    </div>
+
+    <!-- Migraine Severity Table -->
+    <div class="severity-table-wrap">
+      <table class="severity-table">
+        <thead>
+          <tr>
+            <th>Score Range</th>
+            <th>Grade</th>
+            <th>Severity Level</th>
+            <th>Clinical Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>&le; 49</strong></td>
+            <td><span class="badge-grade g1">Grade 1</span></td>
+            <td>Mild / Minimal</td>
+            <td>Little to no disruption in everyday activities, work, or social obligations.</td>
+          </tr>
+          <tr>
+            <td><strong>50 – 59</strong></td>
+            <td><span class="badge-grade g2">Grade 2</span></td>
+            <td>Moderate</td>
+            <td>Occasional disruption to daily functioning and minor work limitation.</td>
+          </tr>
+          <tr>
+            <td><strong>60 – 74</strong></td>
+            <td><span class="badge-grade g3">Grade 3</span></td>
+            <td>Substantial</td>
+            <td>Frequent restriction of routine responsibilities and cancellation of plans.</td>
+          </tr>
+          <tr>
+            <td><strong>&ge; 75</strong></td>
+            <td><span class="badge-grade g4">Grade 4</span></td>
+            <td>Severe</td>
+            <td>Significant continuous impairment requiring targeted medical evaluation and intervention.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button class="btn-restart" onclick="restart()">Retake Questionnaire</button>
   </div>
 </div>
 
 <script>
   const questions = [
-    { text: "1. How often have migraines interfered with how well you dealt with family, friends and others who are close to you?", d: "Role-Restrictive" },
-    { text: "2. How often have migraines interrupted with your leisure time activities such as reading or exercising?", d: "Role-Restrictive" },
-    { text: "3. How often have you had difficulty in performing work or other daily activities?", d: "Role-Restrictive" },
-    { text: "4. How often have migraines kept you from getting as much accomplished as you normally do at work or at home?", d: "Role-Restrictive" },
-    { text: "5. How often have migraines limited your ability to work or do other activities as carefully as you usually do them?", d: "Role-Restrictive" },
-    { text: "6. How often have you had to cancel or delay work or social activities because you were exhausted?", d: "Role-Restrictive" },
-    { text: "7. How often have migraines left you with limited energy levels?", d: "Role-Restrictive" },
-    { text: "8. How often have you had to stop work or other activities?", d: "Role-Preventive" },
-    { text: "9. How often have you needed the help of other people in handling routine tasks?", d: "Role-Preventive" },
-    { text: "10. How often have you avoided social or family activities to treat your migraine attacks?", d: "Role-Preventive" },
-    { text: "11. How often has it been difficult for you to go to social events such as parties?", d: "Role-Preventive" },
-    { text: "12. How often have you felt fed up or frustrated?", d: "Emotional Function" },
-    { text: "13. How often have you felt like you were a burden on others?", d: "Emotional Function" },
-    { text: "14. How often have you been afraid of letting others down?", d: "Emotional Function" }
+    { text: "1. How often have migraines interfered with how well you dealt with family, friends and others who are close to you?", domain: "Role-Restrictive" },
+    { text: "2. How often have migraines interrupted with your leisure time activities such as reading or exercising?", domain: "Role-Restrictive" },
+    { text: "3. How often have you had difficulty in performing work or other daily activities?", domain: "Role-Restrictive" },
+    { text: "4. How often have migraines kept you from getting as much accomplished as you normally do at work or at home?", domain: "Role-Restrictive" },
+    { text: "5. How often have migraines limited your ability to work or do other activities as carefully as you usually do them?", domain: "Role-Restrictive" },
+    { text: "6. How often have you had to cancel or delay work or social activities because you were exhausted?", domain: "Role-Restrictive" },
+    { text: "7. How often have migraines left you with limited energy levels?", domain: "Role-Restrictive" },
+    { text: "8. How often have you had to stop work or other activities?", domain: "Role-Preventive" },
+    { text: "9. How often have you needed the help of other people in handling routine tasks when you had a migraine attack?", domain: "Role-Preventive" },
+    { text: "10. How often have you avoided social or family activities to treat your migraine attacks?", domain: "Role-Preventive" },
+    { text: "11. How often has it been difficult for you to go to social events such as parties?", domain: "Role-Preventive" },
+    { text: "12. How often have you felt fed up or frustrated?", domain: "Emotional Function" },
+    { text: "13. How often have you felt like you were a burden on others?", domain: "Emotional Function" },
+    { text: "14. How often have you been afraid of letting others down?", domain: "Emotional Function" }
   ];
 
-  const scale = ["Never", "Rarely", "Sometimes", "Pretty", "Almost", "Always"];
-  let cur = 0;
-  const vals = Array(14).fill(null);
+  const scale = [
+    { label: "Never", val: 1 },
+    { label: "Rarely", val: 2 },
+    { label: "Sometimes", val: 3 },
+    { label: "Pretty", val: 4 },
+    { label: "Almost", val: 5 },
+    { label: "Always", val: 6 }
+  ];
 
-  function render() {
-    document.getElementById("domainTag").innerText = `${questions[cur].d} (Q${cur+1}/14)`;
-    document.getElementById("qText").innerText = questions[cur].text;
-    document.getElementById("progressText").innerText = `${cur + 1} / 14`;
-    const g = document.getElementById("optGrid");
-    g.innerHTML = "";
-    scale.forEach((s, idx) => {
-      const b = document.createElement("button");
-      b.className = "btn" + (vals[cur] === idx + 1 ? " active" : "");
-      b.innerText = s;
-      b.onclick = () => { vals[cur] = idx + 1; render(); setTimeout(nextQ, 150); };
-      g.appendChild(b);
-    });
+  let currentIdx = 0;
+  const userAnswers = Array(questions.length).fill(null);
+
+  function getGrade(score) {
+    if (score <= 49) return "Grade 1";
+    if (score <= 59) return "Grade 2";
+    if (score <= 74) return "Grade 3";
+    return "Grade 4";
   }
 
-  function nextQ() { if (cur < 13) { cur++; render(); } }
-  function prevQ() { if (cur > 0) { cur--; render(); } }
+  function render() {
+    const q = questions[currentIdx];
+    document.getElementById("domainBadge").innerText = q.domain;
+    document.getElementById("qCount").innerText = `${currentIdx + 1} of ${questions.length}`;
+    document.getElementById("progressFill").style.width = `${((currentIdx + 1) / questions.length) * 100}%`;
+    document.getElementById("questionText").innerText = q.text;
+
+    const optGrid = document.getElementById("optionsGrid");
+    optGrid.innerHTML = "";
+
+    scale.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = `opt-btn ${userAnswers[currentIdx] === opt.val ? 'active' : ''}`;
+      btn.innerText = opt.label;
+      btn.onclick = () => selectOption(opt.val);
+      optGrid.appendChild(btn);
+    });
+
+    document.getElementById("prevBtn").disabled = currentIdx === 0;
+  }
+
+  function selectOption(val) {
+    userAnswers[currentIdx] = val;
+    render();
+    setTimeout(() => {
+      if (currentIdx < questions.length - 1) {
+        currentIdx++;
+        render();
+      } else {
+        showResults();
+      }
+    }, 150);
+  }
+
+  function navigate(direction) {
+    currentIdx += direction;
+    if (currentIdx >= questions.length) {
+      showResults();
+    } else {
+      render();
+    }
+  }
+
+  function showResults() {
+    document.getElementById("surveyStage").style.display = "none";
+    document.getElementById("resultsStage").style.display = "flex";
+
+    // Standard MSQ Formulas
+    const resRaw = userAnswers.slice(0, 7).reduce((a, b) => a + (b || 0), 0);
+    const resScore = Math.max(0, Math.round(((resRaw - 7) * 100) / 35));
+
+    const prevRaw = userAnswers.slice(7, 11).reduce((a, b) => a + (b || 0), 0);
+    const prevScore = Math.max(0, Math.round(((prevRaw - 4) * 100) / 20));
+
+    const emRaw = userAnswers.slice(11, 14).reduce((a, b) => a + (b || 0), 0);
+    const emScore = Math.max(0, Math.round(((emRaw - 3) * 100) / 15));
+
+    document.getElementById("resVal").innerText = resScore;
+    document.getElementById("resGrade").innerText = getGrade(resScore);
+
+    document.getElementById("prevVal").innerText = prevScore;
+    document.getElementById("prevGrade").innerText = getGrade(prevScore);
+
+    document.getElementById("emVal").innerText = emScore;
+    document.getElementById("emGrade").innerText = getGrade(emScore);
+  }
+
+  function restart() {
+    userAnswers.fill(null);
+    currentIdx = 0;
+    document.getElementById("resultsStage").style.display = "none";
+    document.getElementById("surveyStage").style.display = "block";
+    render();
+  }
 
   render();
 </script>
