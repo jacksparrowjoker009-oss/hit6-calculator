@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MSQ Score Dashboard</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent-green: #22c55e;
+    --accent-yellow: #eab308;
+    --accent-red: #ef4444;
+    --accent-blue: #3b82f6;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    padding: 24px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 680px;
+    background: var(--card);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+    margin: 0 0 6px 0;
+  }
+
+  .header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .total-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    border: 1px solid #334155;
+  }
+
+  .total-score {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+  }
+
+  .domain-card {
+    margin-bottom: 20px;
+    background: #111e33;
+    border-radius: 10px;
+    padding: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .domain-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .domain-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .domain-title {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  .domain-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  .progress-bg {
+    width: 100%;
+    height: 12px;
+    background: #334155;
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 1s ease-in-out;
+  }
+
+  .domain-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  .severity-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  .mild { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+  .mild-mod { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+  .mod-sev { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+  .legend {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 16px;
+    padding: 0 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>MSQ Quality of Life Profile</h1>
+    <p>Migraine-Specific Quality of Life Assessment Results</p>
+  </div>
+
+  <div class="total-card">
+    <div>
+      <div style="font-size: 0.85rem; color: var(--text-secondary);">OVERALL MSQ SCORE</div>
+      <div style="font-size: 0.95rem; font-weight: 600; color: #cbd5e1; margin-top: 4px;">Moderate Overall Impact</div>
+    </div>
+    <div class="total-score">63 <span style="font-size: 1.1rem; color: #64748b;">/ 100</span></div>
+  </div>
+
+  <!-- Role Restrictive -->
+  <div class="domain-card">
+    <div class="domain-header">
+      <span class="domain-title">Role Restrictive (RR)</span>
+      <span class="domain-value" style="color: #facc15;">66 / 100</span>
+    </div>
+    <div class="progress-bg">
+      <div class="progress-bar" style="width: 66%; background: #eab308;"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span class="severity-tag mild-mod">Mild to Moderate Impairment</span>
+      <span style="font-size: 0.78rem; color: #94a3b8;">Items 1–7</span>
+    </div>
+    <div class="domain-desc">
+      Measures daily limitations in work, energy levels, and social activities due to migraine symptoms.
+    </div>
+  </div>
+
+  <!-- Role Preventive -->
+  <div class="domain-card">
+    <div class="domain-header">
+      <span class="domain-title">Role Preventive (RP)</span>
+      <span class="domain-value" style="color: #4ade80;">75 / 100</span>
+    </div>
+    <div class="progress-bg">
+      <div class="progress-bar" style="width: 75%; background: #22c55e;"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span class="severity-tag mild">Mild Impairment</span>
+      <span style="font-size: 0.78rem; color: #94a3b8;">Items 8–11</span>
+    </div>
+    <div class="domain-desc">
+      Measures instances where migraines completely stop or cancel work, chores, or social events.
+    </div>
+  </div>
+
+  <!-- Emotional Function -->
+  <div class="domain-card">
+    <div class="domain-header">
+      <span class="domain-title">Emotional Function (EF)</span>
+      <span class="domain-value" style="color: #f87171;">47 / 100</span>
+    </div>
+    <div class="progress-bg">
+      <div class="progress-bar" style="width: 47%; background: #ef4444;"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span class="severity-tag mod-sev">Moderate to Severe Burden</span>
+      <span style="font-size: 0.78rem; color: #94a3b8;">Items 12–14</span>
+    </div>
+    <div class="domain-desc">
+      Measures feelings of frustration, distress, fear of letting others down, and feeling like a burden.
+    </div>
+  </div>
+
+  <div class="legend">
+    <span>◀ 0 = Severe Impact (Low QoL)</span>
+    <span>100 = No Impact (Optimal QoL) ▶</span>
+  </div>
+</div>
+
+</body>
+</html>
+
