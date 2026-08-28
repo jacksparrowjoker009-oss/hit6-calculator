@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HIT-6™ Headache Impact Test</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+    padding: 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+  h1 {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #0f172a;
+  }
+  .instructions {
+    color: #64748b;
+    margin-bottom: 24px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .question-block {
+    padding: 16px 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .question-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+  }
+  .option-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s, border-color 0.15s;
+    border: 1px solid transparent;
+  }
+  .option-label:hover {
+    background: #e2e8f0;
+  }
+  .option-label input[type="radio"] {
+    accent-color: #2563eb;
+  }
+  .option-label.selected {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1d4ed8;
+    font-weight: 500;
+  }
+  .results-card {
+    margin-top: 28px;
+    padding: 20px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .score-display {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 8px 0;
+  }
+  .score-range {
+    font-size: 13px;
+    color: #64748b;
+  }
+  .impact-level {
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>HIT-6™ Headache Impact Test</h1>
+  <p class="instructions">
+    Select one answer for each question to calculate the total impact of headaches on your daily life.
+  </p>
+
+  <form id="hit6Form">
+    <!-- Q1 -->
+    <div class="question-block">
+      <div class="question-title">1. When you have headaches, how often is the pain severe?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q1" value="6" required> Never (6)</label>
+        <label class="option-label"><input type="radio" name="q1" value="8"> Rarely (8)</label>
+        <label class="option-label"><input type="radio" name="q1" value="10"> Sometimes (10)</label>
+        <label class="option-label"><input type="radio" name="q1" value="11"> Very Often (11)</label>
+        <label class="option-label"><input type="radio" name="q1" value="13"> Always (13)</label>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block">
+      <div class="question-title">2. How often do headaches limit your ability to do usual daily activities including household work, work, school, or social activities?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q2" value="6" required> Never (6)</label>
+        <label class="option-label"><input type="radio" name="q2" value="8"> Rarely (8)</label>
+        <label class="option-label"><input type="radio" name="q2" value="10"> Sometimes (10)</label>
+        <label class="option-label"><input type="radio" name="q2" value="11"> Very Often (11)</label>
+        <label class="option-label"><input type="radio" name="q2" value="13"> Always (13)</label>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question-block">
+      <div class="question-title">3. When you have a headache, how often do you wish you could lie down?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q3" value="6" required> Never (6)</label>
+        <label class="option-label"><input type="radio" name="q3" value="8"> Rarely (8)</label>
+        <label class="option-label"><input type="radio" name="q3" value="10"> Sometimes (10)</label>
+        <label class="option-label"><input type="radio" name="q3" value="11"> Very Often (11)</label>
+        <label class="option-label"><input type="radio" name="q3" value="13"> Always (13)</label>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-block">
+      <div class="question-title">4. In the past 4 weeks, how often have you felt too tired to do work or daily activities because of your headaches?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q4" value="6" required> Never (6)</label>
+        <label class="option-label"><input type="radio" name="q4" value="8"> Rarely (8)</label>
+        <label class="option-label"><input type="radio" name="q4" value="10"> Sometimes (10)</label>
+        <label class="option-label"><input type="radio" name="q4" value="11"> Very Often (11)</label>
+        <label class="option-label"><input type="radio" name="q4" value="13"> Always (13)</label>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="question-block">
+      <div class="question-title">5. In the past 4 weeks, how often have you felt fed up or irritated because of your headaches?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q5" value="6" required> Never (6)</label>
+        <label class="option-label"><input type="radio" name="q5" value="8"> Rarely (8)</label>
+        <label class="option-label"><input type="radio" name="q5" value="10"> Sometimes (10)</label>
+        <label class="option-label"><input type="radio" name="q5" value="11"> Very Often (11)</label>
+        <label class="option-label"><input type="radio" name="q5" value="13"> Always (13)</label>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="question-block">
+      <div class="question-title">6. In the past 4 weeks, how often did headaches limit your ability to concentrate on work or daily activities?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q6" value="6" required> Never (6)</label>
+        <label class="option-label"><input type="radio" name="q6" value="8"> Rarely (8)</label>
+        <label class="option-label"><input type="radio" name="q6" value="10"> Sometimes (10)</label>
+        <label class="option-label"><input type="radio" name="q6" value="11"> Very Often (11)</label>
+        <label class="option-label"><input type="radio" name="q6" value="13"> Always (13)</label>
+      </div>
+    </div>
+  </form>
+
+  <div class="results-card">
+    <div>Total Score</div>
+    <div class="score-display" id="totalScore">--</div>
+    <div class="score-range">Score range: 36 – 78</div>
+    <div class="impact-level" id="impactLevel">Answer all 6 questions to view result</div>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('hit6Form');
+  const scoreDisplay = document.getElementById('totalScore');
+  const impactDisplay = document.getElementById('impactLevel');
+
+  form.addEventListener('change', () => {
+    // Update active highlight classes
+    document.querySelectorAll('.option-label').forEach(lbl => {
+      const radio = lbl.querySelector('input');
+      lbl.classList.toggle('selected', radio.checked);
+    });
+
+    // Calculate score
+    let total = 0;
+    let answeredCount = 0;
+
+    for (let i = 1; i <= 6; i++) {
+      const selected = form.querySelector(`input[name="q${i}"]:checked`);
+      if (selected) {
+        total += parseInt(selected.value, 10);
+        answeredCount++;
+      }
+    }
+
+    if (answeredCount === 6) {
+      scoreDisplay.textContent = total;
+      if (total <= 49) {
+        impactDisplay.textContent = "Little to No Impact";
+        impactDisplay.style.color = "#16a34a";
+      } else if (total <= 55) {
+        impactDisplay.textContent = "Some Impact";
+        impactDisplay.style.color = "#ca8a04";
+      } else if (total <= 59) {
+        impactDisplay.textContent = "Substantial Impact";
+        impactDisplay.style.color = "#ea580c";
+      } else {
+        impactDisplay.textContent = "Severe Impact";
+        impactDisplay.style.color = "#dc2626";
+      }
+    } else {
+      scoreDisplay.textContent = answeredCount > 0 ? `${total} (Incomplete)` : "--";
+      impactDisplay.textContent = `Completed ${answeredCount} of 6 questions`;
+      impactDisplay.style.color = "#64748b";
+    }
+  });
+</script>
+
+</body>
+</html>
+
