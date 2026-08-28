@@ -45,6 +45,18 @@
     margin-right: 12px;
     flex-shrink: 0;
   }
+  .vas-container {
+    width: 100%;
+  }
+  .vas-slider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .vas-slider input[type="range"] {
+    flex-grow: 1;
+  }
   .total-box {
     background-color: #e9ecef;
     padding: 12px;
@@ -102,6 +114,22 @@
   <div class="question-row">
     <input type="number" id="q5" min="0" value="0" oninput="calculateMIDAS()">
     <div><b>5.</b> On how many days in the last 3 months did you miss family, social or leisure activities because of your headaches?</div>
+  </div>
+
+  <div class="question-row">
+    <input type="number" id="qa" min="0" value="0">
+    <div><b>A.</b> On how many days in the last 3 months did you have a headache? (If a headache lasted more than 1 day, count each day.)</div>
+  </div>
+
+  <div class="question-row">
+    <div class="vas-container">
+      <div><b>B.</b> On a scale of 0 - 10, on average how painful were these headaches? (where 0=no pain at all, and 10= pain as bad as it can be.) <b>[Selected: <span id="vas-val">0</span>/10]</b></div>
+      <div class="vas-slider">
+        <span>0 (No Pain)</span>
+        <input type="range" id="qb" min="0" max="10" value="0" oninput="document.getElementById('vas-val').innerText = this.value">
+        <span>10 (Worst Pain)</span>
+      </div>
+    </div>
   </div>
 
   <div class="total-box">
