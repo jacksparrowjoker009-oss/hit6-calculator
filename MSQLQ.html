@@ -3,36 +3,36 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MSQ Score Dashboard</title>
+<title>MSQ Clinical Calculator & Dashboard</title>
 <style>
   :root {
-    --bg: #0f172a;
+    --bg: #0b1329;
     --card: #1e293b;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --accent-green: #22c55e;
-    --accent-yellow: #eab308;
-    --accent-red: #ef4444;
-    --accent-blue: #3b82f6;
+    --card-inner: #0f172a;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent-blue: #38bdf8;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --border: #334155;
   }
 
+  * { box-sizing: border-box; }
+
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
-    color: var(--text-primary);
-    padding: 24px;
+    color: var(--text-main);
     margin: 0;
+    padding: 24px 16px;
     display: flex;
     justify-content: center;
   }
 
   .container {
     width: 100%;
-    max-width: 680px;
-    background: var(--card);
-    border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    max-width: 820px;
   }
 
   .header {
@@ -41,185 +41,437 @@
   }
 
   .header h1 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin: 0 0 6px 0;
+    color: #fff;
   }
 
   .header p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-size: 0.88rem;
     margin: 0;
   }
 
-  .total-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #0f172a;
-    border-radius: 12px;
-    padding: 16px 24px;
+  /* Score Dashboard */
+  .dashboard {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
     margin-bottom: 24px;
-    border: 1px solid #334155;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 12px;
+    z-index: 10;
   }
 
-  .total-score {
-    font-size: 2.4rem;
+  .overall-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .overall-score {
+    font-size: 2.2rem;
     font-weight: 800;
     color: var(--accent-blue);
   }
 
-  .domain-card {
-    margin-bottom: 20px;
-    background: #111e33;
+  .domains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .domain-box {
+    background: var(--card-inner);
+    padding: 12px 14px;
     border-radius: 10px;
-    padding: 16px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
+    border: 1px solid var(--border);
   }
 
-  .domain-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-  }
-
-  .domain-header {
+  .domain-top {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
+    align-items: baseline;
+    margin-bottom: 6px;
   }
 
   .domain-title {
+    font-size: 0.82rem;
     font-weight: 600;
-    font-size: 1rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
   }
 
-  .domain-value {
-    font-size: 1.1rem;
-    font-weight: bold;
+  .domain-val {
+    font-size: 1.15rem;
+    font-weight: 700;
   }
 
   .progress-bg {
     width: 100%;
-    height: 12px;
+    height: 8px;
     background: #334155;
-    border-radius: 999px;
+    border-radius: 99px;
     overflow: hidden;
-    position: relative;
+    margin-bottom: 6px;
   }
 
   .progress-bar {
     height: 100%;
-    border-radius: 999px;
-    transition: width 1s ease-in-out;
+    width: 0%;
+    border-radius: 99px;
+    transition: width 0.3s ease, background 0.3s ease;
   }
 
-  .domain-desc {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    margin-top: 8px;
-    line-height: 1.4;
-  }
-
-  .severity-tag {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
+  .severity-badge {
+    font-size: 0.72rem;
     font-weight: 600;
-    margin-top: 6px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
   }
 
-  .mild { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-  .mild-mod { background: rgba(234, 179, 8, 0.2); color: #facc15; }
-  .mod-sev { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+  /* Questionnaire Form */
+  .section-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+  }
 
-  .legend {
-    display: flex;
-    justify-content: space-between;
+  .section-heading {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    margin: 0 0 4px 0;
+  }
+
+  .section-formula {
     font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin-top: 16px;
-    padding: 0 4px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
   }
+
+  .question-item {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .question-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .question-text {
+    font-size: 0.9rem;
+    line-height: 1.35;
+    margin-bottom: 10px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+
+  @media (max-width: 600px) {
+    .options-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .opt-label {
+    background: var(--card-inner);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 4px;
+    text-align: center;
+    font-size: 0.76rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .opt-label:hover {
+    border-color: #64748b;
+    background: #1e293b;
+  }
+
+  .opt-label input {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .opt-label.selected {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--accent-blue);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-reset {
+    background: #334155;
+    color: #cbd5e1;
+  }
+
+  .btn-reset:hover { background: #475569; }
 </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header">
-    <h1>MSQ Quality of Life Profile</h1>
-    <p>Migraine-Specific Quality of Life Assessment Results</p>
+    <h1>MSQ Interactive Assessment</h1>
+    <p>Migraine-Specific Quality of Life Questionnaire • Real-Time Scoring</p>
   </div>
 
-  <div class="total-card">
-    <div>
-      <div style="font-size: 0.85rem; color: var(--text-secondary);">OVERALL MSQ SCORE</div>
-      <div style="font-size: 0.95rem; font-weight: 600; color: #cbd5e1; margin-top: 4px;">Moderate Overall Impact</div>
+  <!-- Real-Time Score Dashboard -->
+  <div class="dashboard">
+    <div class="overall-row">
+      <div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px;">OVERALL MSQ SCORE</div>
+        <div id="overall-status" style="font-size: 0.95rem; font-weight: 600; margin-top: 4px;">Awaiting Input</div>
+      </div>
+      <div class="overall-score"><span id="overall-score">--</span> <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">/ 100</span></div>
     </div>
-    <div class="total-score">63 <span style="font-size: 1.1rem; color: #64748b;">/ 100</span></div>
-  </div>
 
-  <!-- Role Restrictive -->
-  <div class="domain-card">
-    <div class="domain-header">
-      <span class="domain-title">Role Restrictive (RR)</span>
-      <span class="domain-value" style="color: #facc15;">66 / 100</span>
-    </div>
-    <div class="progress-bg">
-      <div class="progress-bar" style="width: 66%; background: #eab308;"></div>
-    </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span class="severity-tag mild-mod">Mild to Moderate Impairment</span>
-      <span style="font-size: 0.78rem; color: #94a3b8;">Items 1–7</span>
-    </div>
-    <div class="domain-desc">
-      Measures daily limitations in work, energy levels, and social activities due to migraine symptoms.
-    </div>
-  </div>
+    <div class="domains-grid">
+      <!-- Role Restrictive -->
+      <div class="domain-box">
+        <div class="domain-top">
+          <span class="domain-title">Role Restrictive</span>
+          <span class="domain-val" id="rr-score">--</span>
+        </div>
+        <div class="progress-bg"><div class="progress-bar" id="rr-bar"></div></div>
+        <span class="severity-badge" id="rr-badge">--</span>
+      </div>
 
-  <!-- Role Preventive -->
-  <div class="domain-card">
-    <div class="domain-header">
-      <span class="domain-title">Role Preventive (RP)</span>
-      <span class="domain-value" style="color: #4ade80;">75 / 100</span>
-    </div>
-    <div class="progress-bg">
-      <div class="progress-bar" style="width: 75%; background: #22c55e;"></div>
-    </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span class="severity-tag mild">Mild Impairment</span>
-      <span style="font-size: 0.78rem; color: #94a3b8;">Items 8–11</span>
-    </div>
-    <div class="domain-desc">
-      Measures instances where migraines completely stop or cancel work, chores, or social events.
-    </div>
-  </div>
+      <!-- Role Preventive -->
+      <div class="domain-box">
+        <div class="domain-top">
+          <span class="domain-title">Role Preventive</span>
+          <span class="domain-val" id="rp-score">--</span>
+        </div>
+        <div class="progress-bg"><div class="progress-bar" id="rp-bar"></div></div>
+        <span class="severity-badge" id="rp-badge">--</span>
+      </div>
 
-  <!-- Emotional Function -->
-  <div class="domain-card">
-    <div class="domain-header">
-      <span class="domain-title">Emotional Function (EF)</span>
-      <span class="domain-value" style="color: #f87171;">47 / 100</span>
-    </div>
-    <div class="progress-bg">
-      <div class="progress-bar" style="width: 47%; background: #ef4444;"></div>
-    </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span class="severity-tag mod-sev">Moderate to Severe Burden</span>
-      <span style="font-size: 0.78rem; color: #94a3b8;">Items 12–14</span>
-    </div>
-    <div class="domain-desc">
-      Measures feelings of frustration, distress, fear of letting others down, and feeling like a burden.
+      <!-- Emotional Function -->
+      <div class="domain-box">
+        <div class="domain-top">
+          <span class="domain-title">Emotional Burden</span>
+          <span class="domain-val" id="ef-score">--</span>
+        </div>
+        <div class="progress-bg"><div class="progress-bar" id="ef-bar"></div></div>
+        <span class="severity-badge" id="ef-badge">--</span>
+      </div>
     </div>
   </div>
 
-  <div class="legend">
-    <span>◀ 0 = Severe Impact (Low QoL)</span>
-    <span>100 = No Impact (Optimal QoL) ▶</span>
-  </div>
+  <!-- Form -->
+  <form id="msqForm">
+    <!-- Section 1 -->
+    <div class="section-card">
+      <div class="section-heading">1. Role Restrictive Domain (Items 1–7)</div>
+      <div class="section-formula">Measures limitations in daily work and social tasks • Formula: ((Raw - 7) * 100) / 35</div>
+      <div id="group-rr"></div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="section-card">
+      <div class="section-heading">2. Role Preventive Domain (Items 8–11)</div>
+      <div class="section-formula">Measures complete interruptions/preventions • Formula: ((Raw - 4) * 100) / 20</div>
+      <div id="group-rp"></div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="section-card">
+      <div class="section-heading">3. Emotional Function Domain (Items 12–14)</div>
+      <div class="section-formula">Measures frustration, fear, and burden • Formula: ((Raw - 3) * 100) / 15</div>
+      <div id="group-ef"></div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-reset" onclick="resetForm()">Reset All Answers</button>
+    </div>
+  </form>
 </div>
+
+<script>
+const questions = [
+  { id: 1, group: 'rr', text: "1. How often have migraines interfered with how well you dealt with family, friends, and others close to you?" },
+  { id: 2, group: 'rr', text: "2. How often have migraines interrupted your leisure time activities such as reading or exercising?" },
+  { id: 3, group: 'rr', text: "3. How often have you had difficulty in performing work or other daily activities?" },
+  { id: 4, group: 'rr', text: "4. How often have migraines kept you from getting as much accomplished as you normally do at work or at home?" },
+  { id: 5, group: 'rr', text: "5. How often have migraines limited your ability to work or do other activities as carefully as you usually do them?" },
+  { id: 6, group: 'rr', text: "6. How often have you had to cancel or delay work or social activities because you were exhausted?" },
+  { id: 7, group: 'rr', text: "7. How often have migraines left you with limited energy levels?" },
+  
+  { id: 8, group: 'rp', text: "8. How often have you had to stop work or other activities?" },
+  { id: 9, group: 'rp', text: "9. How often have you needed the help of other people in handling routine tasks such as everyday household chores?" },
+  { id: 10, group: 'rp', text: "10. How often have you avoided social or family activities to treat your migraine attacks?" },
+  { id: 11, group: 'rp', text: "11. How often has it been difficult for you to go to social events such as parties?" },
+  
+  { id: 12, group: 'ef', text: "12. How often have you felt fed up or frustrated?" },
+  { id: 13, group: 'ef', text: "13. How often have you felt like you were a burden on others?" },
+  { id: 14, group: 'ef', text: "14. How often have you been afraid of letting others down?" }
+];
+
+const options = [
+  { label: "None / Never", val: 6 },
+  { label: "Rarely", val: 5 },
+  { label: "Sometimes", val: 4 },
+  { label: "Pretty", val: 3 },
+  { label: "Almost", val: 2 },
+  { label: "Always", val: 1 }
+];
+
+function renderQuestions() {
+  questions.forEach(q => {
+    const container = document.getElementById(`group-${q.group}`);
+    const qDiv = document.createElement('div');
+    qDiv.className = 'question-item';
+
+    let optionsHtml = '';
+    options.forEach(opt => {
+      optionsHtml += `
+        <label class="opt-label" id="lbl_q${q.id}_v${opt.val}">
+          <input type="radio" name="q${q.id}" value="${opt.val}" onchange="handleSelect(${q.id}, this)">
+          <span>${opt.label}</span>
+          <span style="font-size:0.65rem; color:#64748b;">(${opt.val})</span>
+        </label>
+      `;
+    });
+
+    qDiv.innerHTML = `
+      <div class="question-text">${q.text}</div>
+      <div class="options-grid">${optionsHtml}</div>
+    `;
+    container.appendChild(qDiv);
+  });
+}
+
+function handleSelect(qId, input) {
+  options.forEach(opt => {
+    const lbl = document.getElementById(`lbl_q${qId}_v${opt.val}`);
+    if (lbl) lbl.classList.remove('selected');
+  });
+  input.parentElement.classList.add('selected');
+  calculateScores();
+}
+
+function getStatus(score) {
+  if (score >= 70) return { label: 'Mild Impairment', color: '#22c55e', bg: 'rgba(34, 197, 94, 0.2)' };
+  if (score >= 50) return { label: 'Moderate Impairment', color: '#eab308', bg: 'rgba(234, 179, 8, 0.2)' };
+  return { label: 'Severe Burden / Impairment', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.2)' };
+}
+
+function updateDomainUI(key, score, count, totalExpected) {
+  const scoreElem = document.getElementById(`${key}-score`);
+  const barElem = document.getElementById(`${key}-bar`);
+  const badgeElem = document.getElementById(`${key}-badge`);
+
+  if (count < totalExpected) {
+    scoreElem.innerText = `${count}/${totalExpected}`;
+    scoreElem.style.fontSize = '0.9rem';
+    scoreElem.style.color = '#94a3b8';
+    barElem.style.width = '0%';
+    badgeElem.innerText = 'Incomplete';
+    badgeElem.style.background = '#334155';
+    badgeElem.style.color = '#94a3b8';
+    return null;
+  }
+
+  scoreElem.style.fontSize = '1.15rem';
+  scoreElem.innerText = Math.round(score);
+  barElem.style.width = `${score}%`;
+
+  const status = getStatus(score);
+  scoreElem.style.color = status.color;
+  barElem.style.background = status.color;
+  badgeElem.innerText = status.label;
+  badgeElem.style.color = status.color;
+  badgeElem.style.background = status.bg;
+
+  return score;
+}
+
+function calculateScores() {
+  const form = document.getElementById('msqForm');
+  const formData = new FormData(form);
+
+  let rrSum = 0, rrCount = 0;
+  let rpSum = 0, rpCount = 0;
+  let efSum = 0, efCount = 0;
+
+  for (let i = 1; i <= 14; i++) {
+    const val = formData.get(`q${i}`);
+    if (val !== null) {
+      const num = parseInt(val, 10);
+      if (i <= 7) { rrSum += num; rrCount++; }
+      else if (i <= 11) { rpSum += num; rpCount++; }
+      else { efSum += num; efCount++; }
+    }
+  }
+
+  const rrScore = rrCount === 7 ? ((rrSum - 7) * 100) / 35 : null;
+  const rpScore = rpCount === 4 ? ((rpSum - 4) * 100) / 20 : null;
+  const efScore = efCount === 3 ? ((efSum - 3) * 100) / 15 : null;
+
+  const resRR = updateDomainUI('rr', rrScore, rrCount, 7);
+  const resRP = updateDomainUI('rp', rpScore, rpCount, 4);
+  const resEF = updateDomainUI('ef', efScore, efCount, 3);
+
+  const overallElem = document.getElementById('overall-score');
+  const overallStatus = document.getElementById('overall-status');
+
+  if (resRR !== null && resRP !== null && resEF !== null) {
+    const total = Math.round((resRR + resRP + resEF) / 3);
+    overallElem.innerText = total;
+    const overallStat = getStatus(total);
+    overallStatus.innerText = overallStat.label;
+    overallStatus.style.color = overallStat.color;
+  } else {
+    overallElem.innerText = '--';
+    overallStatus.innerText = `Answered ${rrCount + rpCount + efCount} of 14`;
+    overallStatus.style.color = '#94a3b8';
+  }
+}
+
+function resetForm() {
+  document.getElementById('msqForm').reset();
+  document.querySelectorAll('.opt-label').forEach(el => el.classList.remove('selected'));
+  calculateScores();
+}
+
+renderQuestions();
+</script>
 
 </body>
 </html>
-
