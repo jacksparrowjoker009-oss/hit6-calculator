@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migraine Screening Assessment</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7f6;
+      color: #333;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      text-align: center;
+      font-size: 0.9em;
+      color: #7f8c8d;
+      margin-bottom: 24px;
+    }
+    .question {
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eee;
+    }
+    .question label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .options label {
+      font-weight: normal;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #2980b9;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 5px;
+      display: none;
+    }
+    .positive {
+      background-color: #fde8e8;
+      border-left: 5px solid #e74c3c;
+      color: #c0392b;
+    }
+    .negative {
+      background-color: #eafaf1;
+      border-left: 5px solid #2ecc71;
+      color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Migraine Screening Tool</h2>
+  <p class="subtitle">Clinical Diagnostic Screening Questionnaire</p>
+
+  <form id="migraineForm">
+    <div class="question">
+      <label>1. Did your headaches limit your ability to work, study, or do daily activities for at least one day in the last 3 months?</label>
+      <div class="options">
+        <input type="radio" id="q1_yes" name="q1" value="1" required> <label for="q1_yes">Yes</label>
+        <input type="radio" id="q1_no" name="q1" value="0"> <label for="q1_no">No</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>2. Do you feel nauseated or sick to your stomach when you have a headache?</label>
+      <div class="options">
+        <input type="radio" id="q2_yes" name="q2" value="1" required> <label for="q2_yes">Yes</label>
+        <input type="radio" id="q2_no" name="q2" value="0"> <label for="q2_no">No</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>3. Does light bother you a lot more than usual when you have a headache?</label>
+      <div class="options">
+        <input type="radio" id="q3_yes" name="q3" value="1" required> <label for="q3_yes">Yes</label>
+        <input type="radio" id="q3_no" name="q3" value="0"> <label for="q3_no">No</label>
+      </div>
+    </div>
+
+    <div class="question">
+      <label>4. Is the headache typically pulsating, throbbing, or unilateral (one-sided)?</label>
+      <div class="options">
+        <input type="radio" id="q4_yes" name="q4" value="1" required> <label for="q4_yes">Yes</label>
+        <input type="radio" id="q4_no" name="q4" value="0"> <label for="q4_no">No</label>
+      </div>
+    </div>
+
+    <button type="button" onclick="calculateScore()">Calculate Result</button>
+  </form>
+
+  <div id="result"></div>
+</div>
+
+<script>
+  function calculateScore() {
+    const form = document.getElementById('migraineForm');
+    const formData = new FormData(form);
+    
+    let totalScore = 0;
+    let answeredCount = 0;
+
+    for (let value of formData.values()) {
+      totalScore += parseInt(value);
+      answeredCount++;
+    }
+
+    if (answeredCount < 4) {
+      alert("Please answer all questions before calculating.");
+      return;
+    }
+
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+
+    if (totalScore >= 2) {
+      resultDiv.className = 'positive';
+      resultDiv.innerHTML = `<strong>Screening Result: Positive Indicator (${totalScore}/4)</strong><br>
+      The responses indicate symptoms consistent with migraine criteria (ID-Migraine diagnostic sensitivity threshold met).`;
+    } else {
+      resultDiv.className = 'negative';
+      resultDiv.innerHTML = `<strong>Screening Result: Low Probability (${totalScore}/4)</strong><br>
+      The responses fall below the standard threshold for probable migraine.`;
+    }
+  }
+</script>
+
+</body>
+</html>
