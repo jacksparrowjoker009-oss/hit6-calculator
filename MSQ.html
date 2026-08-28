@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MSQ Migraine Severity Assessment</title>
+  <title>MSQ Assessment</title>
   <style>
     :root {
       --bg: #121212;
@@ -37,7 +37,7 @@
 
     .container {
       width: 100%;
-      max-width: 600px;
+      max-width: 500px;
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 24px;
@@ -138,7 +138,7 @@
       cursor: not-allowed;
     }
 
-    /* Results View & Severity Table */
+    /* Results View */
     .results-view {
       display: none;
       flex-direction: column;
@@ -178,21 +178,21 @@
       color: var(--text-muted);
     }
 
-    /* Severity Table Styling */
+    /* Minimal Severity Table */
     .severity-table-wrap {
       overflow-x: auto;
-      margin-top: 8px;
+      margin-top: 4px;
     }
 
     table.severity-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.82rem;
-      text-align: left;
+      font-size: 0.9rem;
+      text-align: center;
     }
 
     table.severity-table th, table.severity-table td {
-      padding: 10px 12px;
+      padding: 12px;
       border: 1px solid var(--card-border);
     }
 
@@ -204,11 +204,10 @@
 
     .badge-grade {
       display: inline-block;
-      padding: 2px 6px;
+      padding: 2px 8px;
       border-radius: 6px;
       font-weight: 700;
-      font-size: 0.72rem;
-      text-transform: uppercase;
+      font-size: 0.8rem;
     }
 
     .g1 { background: rgba(52, 211, 153, 0.15); color: var(--grade1); }
@@ -249,9 +248,9 @@
     </div>
   </div>
 
-  <!-- Results & Severity Interpretation Table Stage -->
+  <!-- Results Stage with Streamlined Severity Table -->
   <div class="results-view" id="resultsStage">
-    <div class="results-title">Assessment Results & Severity Matrix</div>
+    <div class="results-title">Assessment Summary</div>
 
     <!-- Calculated Score Cards -->
     <div class="score-summary-grid">
@@ -272,41 +271,36 @@
       </div>
     </div>
 
-    <!-- Migraine Severity Table -->
+    <!-- Severity Table: Grade, Score, and Severity Only -->
     <div class="severity-table-wrap">
       <table class="severity-table">
         <thead>
           <tr>
-            <th>Score Range</th>
             <th>Grade</th>
-            <th>Severity Level</th>
-            <th>Clinical Impact</th>
+            <th>Score Range</th>
+            <th>Severity</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>&le; 49</strong></td>
             <td><span class="badge-grade g1">Grade 1</span></td>
-            <td>Mild / Minimal</td>
-            <td>Little to no disruption in everyday activities, work, or social obligations.</td>
+            <td>&le; 49</td>
+            <td>Mild</td>
           </tr>
           <tr>
-            <td><strong>50 – 59</strong></td>
             <td><span class="badge-grade g2">Grade 2</span></td>
+            <td>50 – 59</td>
             <td>Moderate</td>
-            <td>Occasional disruption to daily functioning and minor work limitation.</td>
           </tr>
           <tr>
-            <td><strong>60 – 74</strong></td>
             <td><span class="badge-grade g3">Grade 3</span></td>
+            <td>60 – 74</td>
             <td>Substantial</td>
-            <td>Frequent restriction of routine responsibilities and cancellation of plans.</td>
           </tr>
           <tr>
-            <td><strong>&ge; 75</strong></td>
             <td><span class="badge-grade g4">Grade 4</span></td>
+            <td>&ge; 75</td>
             <td>Severe</td>
-            <td>Significant continuous impairment requiring targeted medical evaluation and intervention.</td>
           </tr>
         </tbody>
       </table>
@@ -400,7 +394,7 @@
     document.getElementById("surveyStage").style.display = "none";
     document.getElementById("resultsStage").style.display = "flex";
 
-    // Standard MSQ Formulas
+    // MSQ Scoring formulas
     const resRaw = userAnswers.slice(0, 7).reduce((a, b) => a + (b || 0), 0);
     const resScore = Math.max(0, Math.round(((resRaw - 7) * 100) / 35));
 
