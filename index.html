@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HIT-6 Headache Impact Test Calculator</title>
+<style>
+  :root {
+    --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --primary: #2563eb;
+    --primary-light: #eff6ff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  body { background: var(--bg-main); color: var(--text-main); padding: 24px 16px; line-height: 1.5; }
+  .container { max-width: 800px; margin: 0 auto; }
+  header { background: #0f172a; color: white; padding: 24px; border-radius: 12px; margin-bottom: 20px; }
+  header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  header p { color: #94a3b8; font-size: 14px; }
+  .card { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .score-card { display: flex; align-items: center; justify-content: space-between; border-left: 6px solid var(--danger); background: white; padding: 20px 24px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+  .score-num-wrap { text-align: left; }
+  .score-num { font-size: 42px; font-weight: 800; color: var(--danger); line-height: 1; }
+  .score-denom { font-size: 16px; color: var(--text-muted); font-weight: 600; }
+  .score-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 700; margin-top: 4px; }
+  .score-info { flex: 1; margin-left: 28px; padding-left: 24px; border-left: 1px solid var(--border); }
+  .impact-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .impact-desc { font-size: 13.5px; color: #475569; }
+  .question-item { padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .question-item:last-child { border-bottom: none; }
+  .q-title { font-size: 14.5px; font-weight: 600; margin-bottom: 10px; }
+  .q-title span { color: var(--primary); margin-right: 6px; }
+  .options-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  @media (max-width: 640px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .score-card { flex-direction: column; align-items: flex-start; }
+    .score-info { margin-left: 0; padding-left: 0; border-left: none; margin-top: 16px; }
+  }
+  .opt-btn { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.15s ease; font-size: 13px; font-weight: 500; }
+  .opt-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+  .opt-btn.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 700; }
+  .opt-pts { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .opt-btn.active .opt-pts { color: var(--primary); }
+  .scale-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13.5px; }
+  .scale-table th { background: #f1f5f9; padding: 8px 12px; text-align: left; font-size: 12px; text-transform: uppercase; color: #475569; }
+  .scale-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .scale-table tr.current-tier { background: var(--danger-bg); font-weight: 700; color: #991b1b; }
+  .btn-reset { background: #f1f5f9; border: 1px solid var(--border); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; color: #475569; margin-top: 12px; }
+  .btn-reset:hover { background: #e2e8f0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Headache Impact Test (HIT-6™) Interactive Calculator</h1>
+    <p>Validated clinical assessment tool for headache-related disability and research data collection.</p>
+  </header>
+  <div class="score-card" id="scoreCard">
+    <div class="score-num-wrap">
+      <span class="score-num" id="totalScore">68</span><span class="score-denom"> / 78</span>
+      <div class="score-label">Total Impact Score</div>
+    </div>
+    <div class="score-info">
+      <div class="impact-badge" id="impactBadge" style="background:#fee2e2; color:#b91c1c;">Severe Impact (≥ 60)</div>
+      <p class="impact-desc" id="impactDesc">Your headaches are causing severe disability and significantly interfering with your daily functioning, concentration, and emotional well-being.</p>
+    </div>
+  </div>
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="font-size:16px;">Assessment Items</h2>
+      <button class="btn-reset" onclick="resetDefaults()">Reset to Initial Assessment</button>
+    </div>
+    <div id="questionsContainer"></div>
+  </div>
+  <div class="card">
+    <h2 style="font-size:16px; margin-bottom:10px;">HIT-6™ Reference Scale</h2>
+    <table class="scale-table">
+      <thead>
+        <tr><th>Score Range</th><th>Impact Level</th><th>Clinical & Research Interpretation</th></tr>
+      </thead>
+      <tbody>
+        <tr id="tier-1"><td><strong>&le; 49</strong></td><td>Little or No Impact</td><td>Headaches rarely interfere with normal daily activity.</td></tr>
+        <tr id="tier-2"><td><strong>50 &ndash; 55</strong></td><td>Some Impact</td><td>Headaches occasionally limit activities; lifestyle modification advised.</td></tr>
+        <tr id="tier-3"><td><strong>56 &ndash; 59</strong></td><td>Substantial Impact</td><td>Headaches are significantly interfering; clinical evaluation recommended.</td></tr>
+        <tr id="tier-4" class="current-tier"><td><strong>&ge; 60</strong></td><td>Severe Impact</td><td>Headaches severely disable daily life; comprehensive diagnostic/prophylactic management advised.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+const questions = [
+  { id: 1, text: "When you have headaches, how often is the pain severe?", val: 13 },
+  { id: 2, text: "How often do headaches limit your ability to do usual daily activities (household work, work, school, social)?", val: 8 },
+  { id: 3, text: "When you have a headache, how often do you wish you could lie down?", val: 13 },
+  { id: 4, text: "In the past 4 weeks, how often have you felt too tired to do work or daily activities because of headaches?", val: 10 },
+  { id: 5, text: "In the past 4 weeks, how often have you felt fed up or irritated because of your headaches?", val: 11 },
+  { id: 6, text: "In the past 4 weeks, how often did headaches limit your ability to concentrate on work or daily activities?", val: 13 }
+];
+const options = [
+  { label: "Never", pts: 6 },
+  { label: "Rarely", pts: 8 },
+  { label: "Sometimes", pts: 10 },
+  { label: "Very Often", pts: 11 },
+  { label: "Always", pts: 13 }
+];
+let answers = [13, 8, 13, 10, 11, 13];
+function renderQuestions() {
+  const container = document.getElementById("questionsContainer");
+  container.innerHTML = "";
+  questions.forEach((q, qIdx) => {
+    const qDiv = document.createElement("div");
+    qDiv.className = "question-item";
+    const title = document.createElement("div");
+    title.className = "q-title";
+    title.innerHTML = `<span>Q${q.id}.</span> ${q.text}`;
+    qDiv.appendChild(title);
+    const grid = document.createElement("div");
+    grid.className = "options-grid";
+    options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = `opt-btn ${answers[qIdx] === opt.pts ? 'active' : ''}`;
+      btn.innerHTML = `${opt.label} <span class="opt-pts">${opt.pts} pts</span>`;
+      btn.onclick = () => { answers[qIdx] = opt.pts; updateUI(); };
+      grid.appendChild(btn);
+    });
+    qDiv.appendChild(grid);
+    container.appendChild(qDiv);
+  });
+}
+function updateUI() {
+  const total = answers.reduce((a, b) => a + b, 0);
+  document.getElementById("totalScore").innerText = total;
+  const badge = document.getElementById("impactBadge");
+  const desc = document.getElementById("impactDesc");
+  const scoreCard = document.getElementById("scoreCard");
+  const scoreNum = document.querySelector(".score-num");
+  for (let i = 1; i <= 4; i++) { document.getElementById(`tier-${i}`).className = ""; }
+  if (total <= 49) {
+    badge.innerText = "Little or No Impact (≤ 49)"; badge.style.background = "var(--success-bg)"; badge.style.color = "var(--success)"; scoreCard.style.borderLeftColor = "var(--success)"; scoreNum.style.color = "var(--success)"; desc.innerText = "Headaches rarely interfere with normal daily activity."; document.getElementById("tier-1").className = "current-tier";
+  } else if (total <= 55) {
+    badge.innerText = "Some Impact (50 - 55)"; badge.style.background = "#fef9c3"; badge.style.color = "#854d0e"; scoreCard.style.borderLeftColor = "#eab308"; scoreNum.style.color = "#854d0e"; desc.innerText = "Headaches occasionally limit function; lifestyle adjustments may help."; document.getElementById("tier-2").className = "current-tier";
+  } else if (total <= 59) {
+    badge.innerText = "Substantial Impact (56 - 59)"; badge.style.background = "var(--warning-bg)"; badge.style.color = "var(--warning)"; scoreCard.style.borderLeftColor = "var(--warning)"; scoreNum.style.color = "var(--warning)"; desc.innerText = "Headaches are significantly interfering; medical evaluation recommended."; document.getElementById("tier-3").className = "current-tier";
+  } else {
+    badge.innerText = "Severe Impact (≥ 60)"; badge.style.background = "var(--danger-bg)"; badge.style.color = "var(--danger)"; scoreCard.style.borderLeftColor = "var(--danger)"; scoreNum.style.color = "var(--danger)"; desc.innerText = "Headaches severely disable daily life; comprehensive diagnostic evaluation and preventative treatment advised."; document.getElementById("tier-4").className = "current-tier";
+  }
+  renderQuestions();
+}
+function resetDefaults() {
+  answers = [13, 8, 13, 10, 11, 13];
+  updateUI();
+}
+renderQuestions();
+updateUI();
+</script>
+</body>
+</html>
+
