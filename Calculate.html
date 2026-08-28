@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Comprehensive Migraine Clinical Assessment Battery</title>
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --accent: #3498db;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #334155;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 30px 15px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 30px;
+    }
+    .section-block {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 25px;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 15px;
+    }
+    .question {
+      margin-bottom: 16px;
+    }
+    .question label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    select, input[type="number"], input[type="range"] {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      margin-top: 5px;
+    }
+    .radio-group label {
+      font-weight: normal;
+      cursor: pointer;
+    }
+    .vas-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .vas-val {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--accent);
+      min-width: 30px;
+    }
+    .btn-submit {
+      display: block;
+      width: 100%;
+      background: #10b981;
+      color: #fff;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .btn-submit:hover {
+      background: #059669;
+    }
+    #result-section {
+      display: none;
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 3px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px 15px;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: var(--primary);
+    }
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+    .severity-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .badge-mild { background: #dcfce7; color: #15803d; }
+    .badge-mod { background: #fef9c3; color: #a16207; }
+    .badge-sev { background: #fee2e2; color: #b91c1c; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Migraine Assessment Battery</h1>
+  <p class="subtitle">Diagnostic & Functional Impact Evaluation for Research Study</p>
+
+  <form id="assessmentForm">
+
+    <!-- 1. ICHD-3 Diagnostic Screener -->
+    <div class="section-block">
+      <div class="section-title">1. ICHD-3 Diagnostic Criteria Screen</div>
+      
+      <div class="question">
+        <label>Have you had at least 5 headache attacks lasting 4–72 hours untreated?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="ichd_attacks" value="1" required> Yes</label>
+          <label><input type="radio" name="ichd_attacks" value="0"> No</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>Pain features (Select all that apply):</label>
+        <div><label><input type="checkbox" name="ichd_feat" value="1"> Unilateral location (one-sided)</label></div>
+        <div><label><input type="checkbox" name="ichd_feat" value="1"> Pulsating / Throbbing quality</label></div>
+        <div><label><input type="checkbox" name="ichd_feat" value="1"> Moderate or severe pain intensity</label></div>
+        <div><label><input type="checkbox" name="ichd_feat" value="1"> Aggravation by routine physical activity</label></div>
+      </div>
+
+      <div class="question">
+        <label>Associated symptoms during attacks (Select all that apply):</label>
+        <div><label><input type="checkbox" name="ichd_assoc" value="nausea"> Nausea and/or vomiting</label></div>
+        <div><label><input type="checkbox" name="ichd_assoc" value="photo_phono"> Both photophobia (light sensitivity) and phonophobia (sound sensitivity)</label></div>
+      </div>
+    </div>
+
+    <!-- 2. VAS (Visual Analog Scale) -->
+    <div class="section-block">
+      <div class="section-title">2. VAS (Visual Analog Scale for Pain)</div>
+      <div class="question">
+        <label>Select average peak pain severity during an attack (0 = No Pain, 10 = Worst Possible Pain):</label>
+        <div class="vas-container">
+          <input type="range" id="vas_input" min="0" max="10" step="1" value="5" oninput="document.getElementById('vas_val').innerText = this.value">
+          <span class="vas-val" id="vas_val">5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. HIT-6 (Headache Impact Test) -->
+    <div class="section-block">
+      <div class="section-title">3. HIT-6™ (Headache Impact Test)</div>
+      
+      <div class="question">
+        <label>When you have headaches, how often is the pain severe?</label>
+        <select name="hit1" required>
+          <option value="6">Never (6)</option>
+          <option value="8">Rarely (8)</option>
+          <option value="10">Sometimes (10)</option>
+          <option value="11">Very Often (11)</option>
+          <option value="13">Always (13)</option>
+        </select>
+      </div>
+
+      <div class="question">
+        <label>How often do headaches limit your ability to do daily activities?</label>
+        <select name="hit2" required>
+          <option value="6">Never (6)</option>
+          <option value="8">Rarely (8)</option>
+          <option value="10">Sometimes (10)</option>
+          <option value="11">Very Often (11)</option>
+          <option value="13">Always (13)</option>
+        </select>
+      </div>
+
+      <div class="question">
+        <label>How often do you wish you could lie down when you have a headache?</label>
+        <select name="hit3" required>
+          <option value="6">Never (6)</option>
+          <option value="8">Rarely (8)</option>
+          <option value="10">Sometimes (10)</option>
+          <option value="11">Very Often (11)</option>
+          <option value="13">Always (13)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 4. MIDAS (Migraine Disability Assessment) -->
+    <div class="section-block">
+      <div class="section-title">4. MIDAS (Disability Assessment - Past 3 Months)</div>
+      <div class="question">
+        <label>Days missed from work/school due to headaches:</label>
+        <input type="number" name="midas1" min="0" max="90" value="0" required>
+      </div>
+      <div class="question">
+        <label>Days with productivity reduced by half or more at work/school:</label>
+        <input type="number" name="midas2" min="0" max="90" value="0" required>
+      </div>
+      <div class="question">
+        <label>Days missed from household work/chores:</label>
+        <input type="number" name="midas3" min="0" max="90" value="0" required>
+      </div>
+    </div>
+
+    <!-- 5. MSQ (Migraine-Specific Quality of Life) -->
+    <div class="section-block">
+      <div class="section-title">5. MSQ (Quality of Life - Role Restrictive)</div>
+      <div class="question">
+        <label>How often have headaches limited you in doing daily work/activities (past 4 weeks)?</label>
+        <select name="msq1" required>
+          <option value="1">None of the time (1)</option>
+          <option value="2">A little bit of the time (2)</option>
+          <option value="3">Some of the time (3)</option>
+          <option value="4">A good bit of the time (4)</option>
+          <option value="5">Most of the time (5)</option>
+          <option value="6">All of the time (6)</option>
+        </select>
+      </div>
+      <div class="question">
+        <label>How often did headaches cancel or prevent plans with family/friends?</label>
+        <select name="msq2" required>
+          <option value="1">None of the time (1)</option>
+          <option value="2">A little bit of the time (2)</option>
+          <option value="3">Some of the time (3)</option>
+          <option value="4">A good bit of the time (4)</option>
+          <option value="5">Most of the time (5)</option>
+          <option value="6">All of the time (6)</option>
+        </select>
+      </div>
+    </div>
+
+    <button type="button" class="btn-submit" onclick="generateResults()">Generate Comprehensive Assessment Table</button>
+  </form>
+
+  <!-- Output Summary Table -->
+  <div id="result-section">
+    <h2>Consolidated Assessment Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Assessment Instrument</th>
+          <th>Raw Score / Value</th>
+          <th>Classification / Clinical Meaning</th>
+        </tr>
+      </thead>
+      <tbody id="result-table-body">
+        <!-- Injected via JS -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  function generateResults() {
+    const form = document.getElementById('assessmentForm');
+
+    // 1. ICHD-3 Calculation
+    const ichdAttacks = form.querySelector('input[name="ichd_attacks"]:checked');
+    if (!ichdAttacks) {
+      alert("Please answer all questions before submitting.");
+      return;
+    }
+    const featCount = form.querySelectorAll('input[name="ichd_feat"]:checked').length;
+    const assocCount = form.querySelectorAll('input[name="ichd_assoc"]:checked').length;
+    
+    let ichdResult = "Criteria Not Fully Met";
+    let ichdBadge = "badge-mild";
+    if (ichdAttacks.value === "1" && featCount >= 2 && assocCount >= 1) {
+      ichdResult = "Criteria Met (Probable/Definite Migraine)";
+      ichdBadge = "badge-sev";
+    }
+
+    // 2. VAS Calculation
+    const vasVal = parseInt(document.getElementById('vas_input').value);
+    let vasInterp = "Mild Pain";
+    let vasBadge = "badge-mild";
+    if (vasVal >= 7) {
+      vasInterp = "Severe Pain";
+      vasBadge = "badge-sev";
+    } else if (vasVal >= 4) {
+      vasInterp = "Moderate Pain";
+      vasBadge = "badge-mod";
+    }
+
+    // 3. HIT-6 Calculation
+    const hitScore = parseInt(form.hit1.value) + parseInt(form.hit2.value) + parseInt(form.hit3.value);
+    let hitInterp = "Little to No Impact";
+    let hitBadge = "badge-mild";
+    if (hitScore >= 30) {
+      hitInterp = "Substantial / Very Severe Impact";
+      hitBadge = "badge-sev";
+    } else if (hitScore >= 24) {
+      hitInterp = "Moderate Impact";
+      hitBadge = "badge-mod";
+    }
+
+    // 4. MIDAS Calculation
+    const midasTotal = (parseInt(form.midas1.value) || 0) + (parseInt(form.midas2.value) || 0) + (parseInt(form.midas3.value) || 0);
+    let midasInterp = "Grade I: Little or No Disability";
+    let midasBadge = "badge-mild";
+    if (midasTotal >= 21) {
+      midasInterp = "Grade IV: Severe Disability";
+      midasBadge = "badge-sev";
+    } else if (midasTotal >= 11) {
+      midasInterp = "Grade III: Moderate Disability";
+      midasBadge = "badge-mod";
+    } else if (midasTotal >= 6) {
+      midasInterp = "Grade II: Mild Disability";
+      midasBadge = "badge-mild";
+    }
+
+    // 5. MSQ Calculation
+    const msqRaw = parseInt(form.msq1.value) + parseInt(form.msq2.value);
+    const msqTransformed = Math.round(((12 - msqRaw) / 10) * 100);
+    let msqInterp = "Minimal QoL Impairment";
+    let msqBadge = "badge-mild";
+    if (msqTransformed < 50) {
+      msqInterp = "Severe QoL Impairment";
+      msqBadge = "badge-sev";
+    } else if (msqTransformed < 75) {
+      msqInterp = "Moderate QoL Impairment";
+      msqBadge = "badge-mod";
+    }
+
+    // Build Table Body
+    const tbody = document.getElementById('result-table-body');
+    tbody.innerHTML = `
+      <tr>
+        <td><strong>ICHD-3 Criteria</strong></td>
+        <td>${featCount} features, ${assocCount} associated symptoms</td>
+        <td><span class="severity-badge ${ichdBadge}">${ichdResult}</span></td>
+      </tr>
+      <tr>
+        <td><strong>VAS (Visual Analog Scale)</strong></td>
+        <td>${vasVal} / 10</td>
+        <td><span class="severity-badge ${vasBadge}">${vasInterp}</span></td>
+      </tr>
+      <tr>
+        <td><strong>HIT-6™ Screener</strong></td>
+        <td>${hitScore} pts</td>
+        <td><span class="severity-badge ${hitBadge}">${hitInterp}</span></td>
+      </tr>
+      <tr>
+        <td><strong>MIDAS</strong></td>
+        <td>${midasTotal} lost/impaired days</td>
+        <td><span class="severity-badge ${midasBadge}">${midasInterp}</span></td>
+      </tr>
+      <tr>
+        <td><strong>MSQ (Quality of Life)</strong></td>
+        <td>${msqTransformed} / 100 (Transformed Score)</td>
+        <td><span class="severity-badge ${msqBadge}">${msqInterp}</span></td>
+      </tr>
+    `;
+
+    document.getElementById('result-section').style.display = 'block';
+    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
