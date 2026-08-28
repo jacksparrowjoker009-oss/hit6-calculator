@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comprehensive Headache & Migraine Assessment</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --card-border: #334155;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #38bdf8;
+    --accent-hover: #0ea5e9;
+    --primary: #2563eb;
+    --grade1: #34d399;
+    --grade2: #38bdf8;
+    --grade3: #fbbf24;
+    --grade4: #f87171;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    padding: 32px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .main-wrapper {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .section-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--card-border);
+    padding-bottom: 12px;
+  }
+
+  .instructions {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  /* --- 1. HIT-6 Styles --- */
+  .hit6-qblock {
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .hit6-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .hit6-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+  }
+  .hit6-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0f172a;
+    border: 1px solid var(--card-border);
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.2s;
+  }
+  .hit6-label:hover {
+    border-color: var(--accent);
+  }
+  .hit6-label.active {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* --- 2. MIDAS Styles --- */
+  .midas-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .midas-row input[type="number"] {
+    width: 65px;
+    padding: 8px;
+    font-size: 1rem;
+    text-align: center;
+    background: #0f172a;
+    border: 1px solid var(--card-border);
+    color: #fff;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .vas-box {
+    width: 100%;
+    background: #0f172a;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--card-border);
+  }
+  .vas-slider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+  }
+  .vas-slider input[type="range"] {
+    flex-grow: 1;
+    accent-color: var(--accent);
+  }
+
+  /* --- 3. MSQ Styles --- */
+  .msq-badge {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .msq-progress-bar {
+    height: 4px;
+    background: var(--card-border);
+    border-radius: 2px;
+    margin: 16px 0 20px 0;
+    overflow: hidden;
+  }
+  .msq-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 7%;
+    transition: width 0.3s ease;
+  }
+  .msq-qtitle {
+    font-size: 1.05rem;
+    font-weight: 600;
+    min-height: 48px;
+    margin-bottom: 20px;
+  }
+  .msq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .msq-btn {
+    background: #0f172a;
+    border: 1px solid var(--card-border);
+    color: var(--text-main);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: 0.2s;
+  }
+  .msq-btn:hover {
+    border-color: var(--accent);
+  }
+  .msq-btn.active {
+    background: rgba(56, 189, 248, 0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .msq-navs {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--card-border);
+    padding-top: 16px;
+  }
+  .btn-nav {
+    background: transparent;
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .btn-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* --- Final Clinical Table --- */
+  .table-container {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    margin-top: 12px;
+  }
+  table.clinical-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  table.clinical-table thead {
+    background-color: #b8cff7;
+  }
+  table.clinical-table th {
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 18px 20px;
+    line-height: 1.4;
+  }
+  table.clinical-table tbody tr:nth-child(odd) {
+    background-color: #273038;
+  }
+  table.clinical-table tbody tr:nth-child(even) {
+    background-color: #12171c;
+  }
+  table.clinical-table td {
+    padding: 18px 20px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    vertical-align: top;
+    color: #d1d5db;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  td.tool-name {
+    font-weight: 700;
+    color: #c7d2fe;
+    white-space: nowrap;
+  }
+  td.score-cell {
+    font-weight: 600;
+    color: #f3f4f6;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+<div class="main-wrapper">
+
+  <!-- ================= 1. HIT-6 SECTION ================= -->
+  <section class="section-card" id="hit6Section">
+    <h2>1. Headache Impact Test (HIT-6™)</h2>
+    <p class="instructions">Select one response per statement to quantify headache burden on your daily life.</p>
+    <form id="hit6Form">
+      <div class="hit6-qblock">
+        <div class="hit6-title">1. When you have headaches, how often is the pain severe?</div>
+        <div class="hit6-grid">
+          <label class="hit6-label"><input type="radio" name="h1" value="6" style="display:none"> Never (6)</label>
+          <label class="hit6-label"><input type="radio" name="h1" value="8" style="display:none"> Rarely (8)</label>
+          <label class="hit6-label"><input type="radio" name="h1" value="10" style="display:none"> Sometimes (10)</label>
+          <label class="hit6-label"><input type="radio" name="h1" value="11" style="display:none"> Very Often (11)</label>
+          <label class="hit6-label"><input type="radio" name="h1" value="13" style="display:none"> Always (13)</label>
+        </div>
+      </div>
+      <div class="hit6-qblock">
+        <div class="hit6-title">2. How often do headaches limit your ability to do usual daily activities?</div>
+        <div class="hit6-grid">
+          <label class="hit6-label"><input type="radio" name="h2" value="6" style="display:none"> Never (6)</label>
+          <label class="hit6-label"><input type="radio" name="h2" value="8" style="display:none"> Rarely (8)</label>
+          <label class="hit6-label"><input type="radio" name="h2" value="10" style="display:none"> Sometimes (10)</label>
+          <label class="hit6-label"><input type="radio" name="h2" value="11" style="display:none"> Very Often (11)</label>
+          <label class="hit6-label"><input type="radio" name="h2" value="13" style="display:none"> Always (13)</label>
+        </div>
+      </div>
+      <div class="hit6-qblock">
+        <div class="hit6-title">3. When you have a headache, how often do you wish you could lie down?</div>
+        <div class="hit6-grid">
+          <label class="hit6-label"><input type="radio" name="h3" value="6" style="display:none"> Never (6)</label>
+          <label class="hit6-label"><input type="radio" name="h3" value="8" style="display:none"> Rarely (8)</label>
+          <label class="hit6-label"><input type="radio" name="h3" value="10" style="display:none"> Sometimes (10)</label>
+          <label class="hit6-label"><input type="radio" name="h3" value="11" style="display:none"> Very Often (11)</label>
+          <label class="hit6-label"><input type="radio" name="h3" value="13" style="display:none"> Always (13)</label>
+        </div>
+      </div>
+      <div class="hit6-qblock">
+        <div class="hit6-title">4. In the past 4 weeks, how often have you felt too tired to work or do daily activities?</div>
+        <div class="hit6-grid">
+          <label class="hit6-label"><input type="radio" name="h4" value="6" style="display:none"> Never (6)</label>
+          <label class="hit6-label"><input type="radio" name="h4" value="8" style="display:none"> Rarely (8)</label>
+          <label class="hit6-label"><input type="radio" name="h4" value="10" style="display:none"> Sometimes (10)</label>
+          <label class="hit6-label"><input type="radio" name="h4" value="11" style="display:none"> Very Often (11)</label>
+          <label class="hit6-label"><input type="radio" name="h4" value="13" style="display:none"> Always (13)</label>
+        </div>
+      </div>
+      <div class="hit6-qblock">
+        <div class="hit6-title">5. In the past 4 weeks, how often have you felt fed up or irritated because of headaches?</div>
+        <div class="hit6-grid">
+          <label class="hit6-label"><input type="radio" name="h5" value="6" style="display:none"> Never (6)</label>
+          <label class="hit6-label"><input type="radio" name="h5" value="8" style="display:none"> Rarely (8)</label>
+          <label class="hit6-label"><input type="radio" name="h5" value="10" style="display:none"> Sometimes (10)</label>
+          <label class="hit6-label"><input type="radio" name="h5" value="11" style="display:none"> Very Often (11)</label>
+          <label class="hit6-label"><input type="radio" name="h5" value="13" style="display:none"> Always (13)</label>
+        </div>
+      </div>
+      <div class="hit6-qblock">
+        <div class="hit6-title">6. In the past 4 weeks, how often did headaches limit ability to concentrate?</div>
+        <div class="hit6-grid">
+          <label class="hit6-label"><input type="radio" name="h6" value="6" style="display:none"> Never (6)</label>
+          <label class="hit6-label"><input type="radio" name="h6" value="8" style="display:none"> Rarely (8)</label>
+          <label class="hit6-label"><input type="radio" name="h6" value="10" style="display:none"> Sometimes (10)</label>
+          <label class="hit6-label"><input type="radio" name="h6" value="11" style="display:none"> Very Often (11)</label>
+          <label class="hit6-label"><input type="radio" name="h6" value="13" style="display:none"> Always (13)</label>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- ================= 2. MIDAS & VAS SECTION ================= -->
+  <section class="section-card" id="midasSection">
+    <h2>2. Migraine Disability Assessment (MIDAS) &amp; VAS</h2>
+    <p class="instructions">Enter the number of days impacted over the last 3 months and rate average pain intensity.</p>
+
+    <div class="midas-row">
+      <input type="number" id="m_q1" min="0" value="0" oninput="updateAll()">
+      <div><b>1.</b> On how many days in the last 3 months did you miss work or school because of your headaches?</div>
+    </div>
+    <div class="midas-row">
+      <input type="number" id="m_q2" min="0" value="0" oninput="updateAll()">
+      <div><b>2.</b> How many days was your productivity at work or school reduced by half or more?</div>
+    </div>
+    <div class="midas-row">
+      <input type="number" id="m_q3" min="0" value="0" oninput="updateAll()">
+      <div><b>3.</b> On how many days did you not do household work because of your headaches?</div>
+    </div>
+    <div class="midas-row">
+      <input type="number" id="m_q4" min="0" value="0" oninput="updateAll()">
+      <div><b>4.</b> How many days was your productivity in household work reduced by half or more?</div>
+    </div>
+    <div class="midas-row">
+      <input type="number" id="m_q5" min="0" value="0" oninput="updateAll()">
+      <div><b>5.</b> On how many days did you miss family, social, or leisure activities?</div>
+    </div>
+
+    <!-- VAS Pain Intensity Slider -->
+    <div class="vas-box">
+      <div><b>Visual Analog Scale (VAS Pain Intensity):</b> <span id="vas-val-label" style="color:var(--accent); font-weight:700;">0 / 10</span></div>
+      <div class="vas-slider">
+        <span style="font-size:0.8rem; color:var(--text-muted);">0 (No Pain)</span>
+        <input type="range" id="vas_slider" min="0" max="10" value="0" oninput="updateAll()">
+        <span style="font-size:0.8rem; color:var(--text-muted);">10 (Worst Pain)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 3. MSQ SECTION ================= -->
+  <section class="section-card" id="msqSection">
+    <h2>3. Migraine-Specific Quality of Life (MSQ v2.1)</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 12px;">
+      <span class="msq-badge" id="msqDomainBadge">Role Restrictive</span>
+      <span style="font-size:0.85rem; color:var(--text-muted);" id="msqCountLabel">1 of 14</span>
+    </div>
+    <div class="msq-progress-bar">
+      <div class="msq-progress-fill" id="msqProgressFill"></div>
+    </div>
+    <div class="msq-qtitle" id="msqQuestionText">Loading...</div>
+    <div class="msq-grid" id="msqOptionsGrid"></div>
+    <div class="msq-navs">
+      <button class="btn-nav" id="msqPrevBtn" onclick="navigateMSQ(-1)">Previous</button>
+      <button class="btn-nav" id="msqNextBtn" onclick="navigateMSQ(1)">Next</button>
+    </div>
+  </section>
+
+  <!-- ================= 4. FINAL ASSESSMENT TABLE ================= -->
+  <section class="section-card">
+    <h2>Clinical Assessment Summary</h2>
+    <p class="instructions">Dynamic cumulative output based on your completed responses across all tools.</p>
+    <div class="table-container">
+      <table class="clinical-table">
+        <thead>
+          <tr>
+            <th style="width: 18%;">Assessment /<br>Tool</th>
+            <th style="width: 32%;">Full Name /<br>Description</th>
+            <th style="width: 18%;">Score /<br>Result</th>
+            <th style="width: 32%;">Clinical<br>Interpretation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tool-name">HIT-6</td>
+            <td>Headache Impact Test-6</td>
+            <td class="score-cell" id="res_hit6_score">-- / 78</td>
+            <td id="res_hit6_interp">Incomplete (Answer all 6 questions)</td>
+          </tr>
+          <tr>
+            <td class="tool-name">MIDAS</td>
+            <td>Migraine Disability Assessment</td>
+            <td class="score-cell" id="res_midas_score">0</td>
+            <td id="res_midas_interp">Grade I: Little or No Disability (0-5)</td>
+          </tr>
+          <tr>
+            <td class="tool-name">VAS</td>
+            <td>Visual Analog Scale (Pain)</td>
+            <td class="score-cell" id="res_vas_score">0 / 10</td>
+            <td id="res_vas_interp">No Pain</td>
+          </tr>
+          <tr>
+            <td class="tool-name">ICHD-3</td>
+            <td>International Classification of Headache Disorders (3rd Edition)</td>
+            <td class="score-cell">Migraine without aura</td>
+            <td>Confirmed diagnostic classification</td>
+          </tr>
+          <tr>
+            <td class="tool-name">MSQ</td>
+            <td>Migraine-Specific Quality of Life</td>
+            <td class="score-cell" id="res_msq_score">--</td>
+            <td id="res_msq_interp">Complete 14 questions to view status</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  /* ---------------- MSQ SETUP ---------------- */
+  const msqQuestions = [
+    { text: "1. How often have migraines interfered with how well you dealt with family, friends and others who are close to you?", domain: "Role Restrictive" },
+    { text: "2. How often have migraines interrupted your leisure time activities such as reading or exercising?", domain: "Role Restrictive" },
+    { text: "3. How often have you had difficulty in performing work or other daily activities?", domain: "Role Restrictive" },
+    { text: "4. How often have migraines kept you from getting as much accomplished as you normally do at work or at home?", domain: "Role Restrictive" },
+    { text: "5. How often have migraines limited your ability to work or do other activities as carefully as you usually do?", domain: "Role Restrictive" },
+    { text: "6. How often have you had to cancel or delay work or social activities because you were exhausted?", domain: "Role Restrictive" },
+    { text: "7. How often have migraines left you with limited energy levels?", domain: "Role Restrictive" },
+    { text: "8. How often have you had to stop work or other activities?", domain: "Role Preventive" },
+    { text: "9. How often have you needed the help of other people in handling routine tasks when having a migraine?", domain: "Role Preventive" },
+    { text: "10. How often have you avoided social or family activities to treat your migraine attacks?", domain: "Role Preventive" },
+    { text: "11. How often has it been difficult for you to go to social events such as parties?", domain: "Role Preventive" },
+    { text: "12. How often have you felt fed up or frustrated?", domain: "Emotional Function" },
+    { text: "13. How often have you felt like you were a burden on others?", domain: "Emotional Function" },
+    { text: "14. How often have you been afraid of letting others down?", domain: "Emotional Function" }
+  ];
+
+  const msqScale = [
+    { label: "None of the time", val: 1 },
+    { label: "A little of the time", val: 2 },
+    { label: "Some of the time", val: 3 },
+    { label: "A good bit of time", val: 4 },
+    { label: "Most of the time", val: 5 },
+    { label: "All of the time", val: 6 }
+  ];
+
+  let msqIndex = 0;
+  const msqAnswers = Array(msqQuestions.length).fill(null);
+
+  function renderMSQ() {
+    const q = msqQuestions[msqIndex];
+    document.getElementById("msqDomainBadge").innerText = q.domain;
+    document.getElementById("msqCountLabel").innerText = `${msqIndex + 1} of ${msqQuestions.length}`;
+    document.getElementById("msqProgressFill").style.width = `${((msqIndex + 1) / msqQuestions.length) * 100}%`;
+    document.getElementById("msqQuestionText").innerText = q.text;
+
+    const optGrid = document.getElementById("msqOptionsGrid");
+    optGrid.innerHTML = "";
+
+    msqScale.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `msq-btn ${msqAnswers[msqIndex] === opt.val ? 'active' : ''}`;
+      btn.innerText = opt.label;
+      btn.onclick = () => {
+        msqAnswers[msqIndex] = opt.val;
+        renderMSQ();
+        updateAll();
+        if (msqIndex < msqQuestions.length - 1) {
+          setTimeout(() => { msqIndex++; renderMSQ(); }, 120);
+        }
+      };
+      optGrid.appendChild(btn);
+    });
+
+    document.getElementById("msqPrevBtn").disabled = msqIndex === 0;
+    document.getElementById("msqNextBtn").disabled = msqIndex === msqQuestions.length - 1;
+  }
+
+  function navigateMSQ(dir) {
+    msqIndex = Math.max(0, Math.min(msqQuestions.length - 1, msqIndex + dir));
+    renderMSQ();
+  }
+
+  /* ---------------- MASTER UPDATE & SCORING LOGIC ---------------- */
+  function updateAll() {
+    // 1. HIT-6 Scoring
+    const hit6Radios = document.querySelectorAll('#hit6Form input[type="radio"]');
+    document.querySelectorAll('.hit6-label').forEach(lbl => {
+      const radio = lbl.querySelector('input');
+      lbl.classList.toggle('active', radio.checked);
+    });
+
+    let hit6Total = 0;
+    let hit6Answered = 0;
+    for (let i = 1; i <= 6; i++) {
+      const checked = document.querySelector(`input[name="h${i}"]:checked`);
+      if (checked) {
+        hit6Total += p
