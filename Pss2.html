@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSS-10 Perceived Stress Scale Assessment</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --low: #16a34a;
+      --mod: #d97706;
+      --high: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .question-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background: #fafafa;
+    }
+
+    .question-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge-reverse {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 600;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+
+    .opt-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.25rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .opt-label input {
+      display: none;
+    }
+
+    .opt-label.selected {
+      background: #eff6ff;
+      border-color: var(--primary);
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .score-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .score-info {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .score-number {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .tier-badge {
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 0.6rem 1.1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .btn-print {
+      background: #0f172a;
+      color: white;
+    }
+
+    .btn-print:hover {
+      background: #334155;
+    }
+
+    /* History Table */
+    .history-section {
+      margin-top: 2rem;
+    }
+
+    .history-section h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+      color: #0f172a;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.75rem 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    @media print {
+      body { padding: 0; background: white; }
+      .container { box-shadow: none; max-width: 100%; padding: 0; }
+      .button-group { display: none !important; }
+      .score-card { box-shadow: none; border-color: #cbd5e1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Perceived Stress Scale (PSS-10)</h1>
+    <p class="subtitle">In the <strong>last month</strong>, how often have you felt or thought a certain way?</p>
+
+    <div id="questionsList"></div>
+
+    <div class="score-card">
+      <div class="score-info">
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted);">Total Score</div>
+          <span class="score-number" id="totalDisplay">0</span><span style="color: var(--text-muted);"> / 40</span>
+        </div>
+        <span id="tierBadge" class="tier-badge" style="background-color: var(--low);">Low Stress</span>
+      </div>
+      <div class="button-group">
+        <button class="btn-primary" id="logBtn">Log Session</button>
+        <button class="btn-secondary" id="resetBtn">Reset</button>
+        <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+      </div>
+    </div>
+
+    <!-- Session History Table -->
+    <div class="history-section">
+      <h3>Session History</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Session</th>
+            <th>Score</th>
+            <th>Interpretation</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody">
+          <tr>
+            <td colspan="3" style="color: var(--text-muted); text-align: center;">No sessions logged yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { text: "1. Upset because of something that happened unexpectedly?", rev: false },
+      { text: "2. Felt that you were unable to control important things in your life?", rev: false },
+      { text: "3. Felt nervous and 'stressed'?", rev: false },
+      { text: "4. Felt confident about your ability to handle personal problems?", rev: true },
+      { text: "5. Felt that things were going your way?", rev: true },
+      { text: "6. Found that you could not cope with all the things you had to do?", rev: false },
+      { text: "7. Able to control irritations in your life?", rev: true },
+      { text: "8. Felt that you were on top of things?", rev: true },
+      { text: "9. Angered because of things that were outside of your control?", rev: false },
+      { text: "10. Felt difficulties were piling up so high you could not overcome them?", rev: false }
+    ];
+
+    const options = ["Never", "Almost Never", "Sometimes", "Fairly Often", "Very Often"];
+    const container = document.getElementById("questionsList");
+    const totalDisplay = document.getElementById("totalDisplay");
+    const tierBadge = document.getElementById("tierBadge");
+    const historyBody = document.getElementById("historyBody");
+    const logBtn = document.getElementById("logBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const answers = new Array(10).fill(0);
+    let historyData = [];
+
+    questions.forEach((q, qIndex) => {
+      const card = document.createElement("div");
+      card.className = "question-card";
+
+      const title = document.createElement("div");
+      title.className = "question-title";
+      title.innerHTML = `<span>${q.text}</span> ${q.rev ? '<span class="badge-reverse">Reversed</span>' : ''}`;
+      card.appendChild(title);
+
+      const grid = document.createElement("div");
+      grid.className = "options-grid";
+
+      options.forEach((optText, optValue) => {
+        const label = document.createElement("label");
+        label.className = `opt-label ${optValue === 0 ? 'selected' : ''}`;
+        label.innerHTML = `
+          <input type="radio" name="q${qIndex}" value="${optValue}" ${optValue === 0 ? 'checked' : ''}>
+          <strong>${optValue}</strong>
+          <span>${optText}</span>
+        `;
+
+        label.querySelector("input").addEventListener("change", () => {
+          card.querySelectorAll(".opt-label").forEach(l => l.classList.remove("selected"));
+          label.classList.add("selected");
+          answers[qIndex] = optValue;
+          computeScore();
+        });
+
+        grid.appendChild(label);
+      });
+
+      card.appendChild(grid);
+      container.appendChild(card);
+    });
+
+    function getTier(total) {
+      if (total <= 13) return { label: "Low Stress", color: "var(--low)" };
+      if (total <= 26) return { label: "Moderate Stress", color: "var(--mod)" };
+      return { label: "High Perceived Stress", color: "var(--high)" };
+    }
+
+    function calculateCurrentTotal() {
+      let total = 0;
+      answers.forEach((val, idx) => {
+        const isRev = questions[idx].rev;
+        total += isRev ? (4 - val) : val;
+      });
+      return total;
+    }
+
+    function computeScore() {
+      const total = calculateCurrentTotal();
+      totalDisplay.textContent = total;
+
+      const tier = getTier(total);
+      tierBadge.textContent = tier.label;
+      tierBadge.style.backgroundColor = tier.color;
+    }
+
+    function renderHistory() {
+      if (historyData.length === 0) return;
+      historyBody.innerHTML = historyData.map(item => `
+        <tr>
+          <td>#${item.sessionNumber}</td>
+          <td><strong>${item.score}</strong> / 40</td>
+          <td><span style="color: ${item.tier.color}; font-weight: 600;">${item.tier.label}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    logBtn.addEventListener("click", () => {
+      const score = calculateCurrentTotal();
+      const tier = getTier(score);
+      const sessionNumber = historyData.length + 1;
+
+      historyData.unshift({ sessionNumber, score, tier });
+      renderHistory();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      answers.fill(0);
+      document.querySelectorAll(".question-card").forEach(card => {
+        const labels = card.querySelectorAll(".opt-label");
+        labels.forEach((l, i) => {
+          if (i === 0) {
+            l.classList.add("selected");
+            l.querySelector("input").checked = true;
+          } else {
+            l.classList.remove("selected");
+          }
+        });
+      });
+      computeScore();
+    });
+
+    computeScore();
+  </script>
+</body>
+</html>
+
