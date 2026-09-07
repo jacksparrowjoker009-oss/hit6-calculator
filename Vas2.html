@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visual Analogue Scale (VAS) - Stress Tracker</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --mild: #22c55e;
+      --mod: #f59e0b;
+      --sev: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .slider-group {
+      margin-bottom: 2rem;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .badge {
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: white;
+    }
+
+    .range-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+      background: #cbd5e1;
+      cursor: pointer;
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      border: 2px solid white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .range-anchors {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.35rem;
+    }
+
+    .stats-card {
+      background: #f1f5f9;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .stat-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #cbd5e1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.6rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Visual Analogue Scale (VAS)</h1>
+    <p class="subtitle">Measure and track acute stress changes pre- and post-intervention.</p>
+
+    <!-- Pre Intervention -->
+    <div class="slider-group">
+      <div class="label-row">
+        <span>Pre-Intervention: <span id="preVal">0</span> mm</span>
+        <span id="preBadge" class="badge" style="background-color: var(--mild);">Low Stress</span>
+      </div>
+      <input type="range" min="0" max="100" value="0" class="range-slider" id="preSlider">
+      <div class="range-anchors">
+        <span>0 mm (No stress at all)</span>
+        <span>100 mm (Worst imaginable)</span>
+      </div>
+    </div>
+
+    <!-- Post Intervention -->
+    <div class="slider-group">
+      <div class="label-row">
+        <span>Post-Intervention: <span id="postVal">0</span> mm</span>
+        <span id="postBadge" class="badge" style="background-color: var(--mild);">Low Stress</span>
+      </div>
+      <input type="range" min="0" max="100" value="0" class="range-slider" id="postSlider">
+      <div class="range-anchors">
+        <span>0 mm (No stress at all)</span>
+        <span>100 mm (Worst imaginable)</span>
+      </div>
+    </div>
+
+    <!-- Analysis Box -->
+    <div class="stats-card">
+      <div>
+        <div class="stat-title">Absolute Change</div>
+        <div class="stat-value" id="deltaDisplay">0 mm</div>
+      </div>
+      <div>
+        <div class="stat-title">Relative Reduction</div>
+        <div class="stat-value" id="percentDisplay">0%</div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button class="btn-primary" id="logBtn">Log Session</button>
+      <button class="btn-secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <!-- History -->
+    <h3>Session History</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Session</th>
+          <th>Pre</th>
+          <th>Post</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr>
+          <td colspan="4" style="color: var(--text-muted); text-align: center;">No sessions logged yet.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const preSlider = document.getElementById('preSlider');
+    const postSlider = document.getElementById('postSlider');
+    const preVal = document.getElementById('preVal');
+    const postVal = document.getElementById('postVal');
+    const preBadge = document.getElementById('preBadge');
+    const postBadge = document.getElementById('postBadge');
+    const deltaDisplay = document.getElementById('deltaDisplay');
+    const percentDisplay = document.getElementById('percentDisplay');
+    const logBtn = document.getElementById('logBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const historyBody = document.getElementById('historyBody');
+
+    let historyData = [];
+
+    function getTier(val) {
+      if (val <= 30) return { label: 'Low Stress', color: 'var(--mild)' };
+      if (val <= 60) return { label: 'Moderate Stress', color: 'var(--mod)' };
+      return { label: 'Severe Stress', color: 'var(--sev)' };
+    }
+
+    function updateCalculations() {
+      const pre = parseInt(preSlider.value);
+      const post = parseInt(postSlider.value);
+
+      preVal.textContent = pre;
+      postVal.textContent = post;
+
+      const preTier = getTier(pre);
+      preBadge.textContent = preTier.label;
+      preBadge.style.backgroundColor = preTier.color;
+
+      const postTier = getTier(post);
+      postBadge.textContent = postTier.label;
+      postBadge.style.backgroundColor = postTier.color;
+
+      const delta = pre - post;
+      deltaDisplay.textContent = (delta > 0 ? '-' : delta < 0 ? '+' : '') + Math.abs(delta) + ' mm';
+      deltaDisplay.style.color = delta > 0 ? 'var(--success)' : delta < 0 ? 'var(--danger)' : 'var(--text)';
+
+      if (pre === 0) {
+        percentDisplay.textContent = '0%';
+        percentDisplay.style.color = 'var(--text)';
+      } else {
+        const pct = Math.round((delta / pre) * 100);
+        percentDisplay.textContent = (pct > 0 ? '-' : pct < 0 ? '+' : '') + Math.abs(pct) + '%';
+        percentDisplay.style.color = pct > 0 ? 'var(--success)' : pct < 0 ? 'var(--danger)' : 'var(--text)';
+      }
+    }
+
+    preSlider.addEventListener('input', updateCalculations);
+    postSlider.addEventListener('input', updateCalculations);
+
+    logBtn.addEventListener('click', () => {
+      const pre = parseInt(preSlider.value);
+      const post = parseInt(postSlider.value);
+      const delta = pre - post;
+      const sessionNumber = historyData.length + 1;
+
+      historyData.unshift({ sessionNumber, pre, post, delta });
+      renderHistory();
+    });
+
+    resetBtn.addEventListener('click', () => {
+      preSlider.value = 0;
+      postSlider.value = 0;
+      updateCalculations();
+    });
+
+    function renderHistory() {
+      if (historyData.length === 0) return;
+      historyBody.innerHTML = historyData.map(item => `
+        <tr>
+          <td>#${item.sessionNumber}</td>
+          <td>${item.pre} mm</td>
+          <td>${item.post} mm</td>
+          <td style="color: ${item.delta > 0 ? 'var(--success)' : item.delta < 0 ? 'var(--danger)' : 'inherit'}">
+            ${item.delta > 0 ? '-' : item.delta < 0 ? '+' : ''}${Math.abs(item.delta)} mm
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    updateCalculations();
+  </script>
+</body>
+</html>
+
