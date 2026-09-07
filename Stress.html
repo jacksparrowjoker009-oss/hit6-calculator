@@ -644,4 +644,89 @@
       const c3 = hrs > 7 ? 0 : hrs >= 6 ? 1 : hrs >= 5 ? 2 : 3;
 
       const [bH, bM] = psqi_bed.value.split(':').map(Number);
+      const [wH, wM] = wakeTimeParts = psqi_wake.value.split(':').map(Number);
+      let inBedMinutes = (wakeTimeParts[0] * 60 + wakeTimeParts[1]) - (bH * 60 + bM);
+      if (inBedMinutes <= 0) inBedMinutes += 24 * 60;
+      const inBedHours = inBedMinutes / 60;
+      const eff = inBedHours > 0 ? (hrs / inBedHours) * 100 : 0;
+      const c4 = eff >= 85 ? 0 : eff >= 75 ? 1 : eff >= 65 ? 2 : 3;
+
+      const c5 = 0;
+      const c6 = parseInt(psqi_meds.value);
+      const daySum = parseInt(psqi_day1.value) + parseInt(psqi_day2.value);
+      const c7 = daySum === 0 ? 0 : daySum <= 2 ? 1 : daySum <= 4 ? 2 : 3;
+
+      return c1 + c2 + c3 + c4 + c5 + c6 + c7;
+    }
+
+    function updatePSQI() {
+      const global = getPsqiTotal();
+      summaryPsqi.innerHTML = `${global} <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted);">/ 21</span>`;
+
+      if (global <= 5) {
+        summaryPsqiTier.textContent = "Good Sleeper (≤5)";
+        summaryPsqiTier.style.color = "var(--good)";
+      } else {
+        summaryPsqiTier.textContent = "Poor Sleeper (>5)";
+        summaryPsqiTier.style.color = "var(--poor)";
+      }
+    }
+
+    [psqi_bed, psqi_wake, psqi_hours, psqi_lat, psqi_qual, psqi_meds, psqi_day1, psqi_day2].forEach(el => {
+      el.addEventListener('input', updatePSQI);
+      el.addEventListener('change', updatePSQI);
+    });
+
+    // --- 4. SESSION HISTORY TABLE LOGIC ---
+    const historyBody = document.getElementById('historyBody');
+    const logBtn = document.getElementById('logBtn');
+    let historyData = [];
+
+    function renderHistory() {
+      if (historyData.length === 0) return;
+      historyBody.innerHTML = historyData.map(item => `
+        <tr>
+          <td>#${item.sessionNumber}</td>
+          <td style="color: ${item.vasColor}; font-weight: 600;">${item.vasDelta}</td>
+          <td><strong>${item.pssScore}</strong> / 40 (${item.pssTier})</td>
+          <td><strong>${item.psqiScore}</strong> / 21 (${item.psqiTier})</td>
+        </tr>
+      `).join('');
+    }
+
+    logBtn.addEventListener('click', () => {
+      const pre = parseInt(preSlider.value);
+      const post = parseInt(postSlider.value);
+      const delta = pre - post;
+      const vasDelta = (delta > 0 ? '-' : delta < 0 ? '+' : '') + Math.abs(delta) + ' mm';
+      const vasColor = delta > 0 ? 'var(--good)' : delta < 0 ? 'var(--poor)' : 'var(--text)';
+
+      const pssScore = getPssTotal();
+      const pssTier = pssScore <= 13 ? "Low" : pssScore <= 26 ? "Moderate" : "High";
+
+      const psqiScore = getPsqiTotal();
+      const psqiTier = psqiScore <= 5 ? "Good" : "Poor";
+
+      const sessionNumber = historyData.length + 1;
+
+      historyData.unshift({
+        sessionNumber,
+        vasDelta,
+        vasColor,
+        pssScore,
+        pssTier,
+        psqiScore,
+        psqiTier
+      });
+
+      renderHistory();
+    });
+
+    // Initial calculation run
+    updateVAS();
+    updatePSS();
+    updatePSQI();
+  </script>
+</body>
+</html>
     
