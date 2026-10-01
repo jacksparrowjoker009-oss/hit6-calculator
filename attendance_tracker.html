@@ -18,7 +18,7 @@
     body { background: var(--bg); margin: 0; padding: 20px; color: #0f172a; }
 
     .paper-sheet {
-      max-width: 1300px;
+      max-width: 1400px;
       margin: 0 auto;
       background: #ffffff;
       padding: 24px;
@@ -26,7 +26,7 @@
       border-radius: 6px;
     }
 
-    /* Screen UI Controls */
+    /* Screen Toolbar */
     .toolbar {
       display: flex;
       gap: 12px;
@@ -38,15 +38,17 @@
       border-radius: 6px;
     }
     .toolbar input, .toolbar button {
-      padding: 6px 12px;
+      padding: 7px 12px;
       border: 1px solid #cbd5e1;
       border-radius: 4px;
       font-size: 13px;
     }
     .btn-action { background: #0284c7; color: white; border: none; cursor: pointer; font-weight: 600; }
+    .btn-action:hover { background: #0369a1; }
     .btn-print { background: #059669; color: white; border: none; cursor: pointer; font-weight: 600; margin-left: auto; }
+    .btn-print:hover { background: #047857; }
 
-    /* Print Header */
+    /* Printable Header */
     .sheet-header {
       border-bottom: 2px solid var(--primary);
       padding-bottom: 8px;
@@ -70,17 +72,16 @@
       border: 1px solid var(--border);
       text-align: center;
       padding: 4px 2px;
-      height: 26px;
+      height: 28px;
     }
     th { background: #f8fafc; font-weight: 600; }
-    
-    col.col-no { width: 32px; }
+
+    col.col-no { width: 34px; }
     col.col-name { width: 200px; }
     col.col-day { width: auto; }
     col.col-stat { width: 44px; }
     col.col-act { width: 30px; }
 
-    /* Day columns and cell inputs */
     .day-num { font-size: 11px; }
     .day-name { font-size: 8px; text-transform: uppercase; color: #64748b; }
     .weekend { background-color: var(--weekend-bg); }
@@ -93,7 +94,7 @@
       font-size: 11px;
       outline: none;
     }
-    .name-input:focus { background: #e2e8f0; }
+    .name-input:focus { background: #e2e8f0; border-radius: 2px; }
 
     .status-cell {
       cursor: pointer;
@@ -113,6 +114,7 @@
       table { font-size: 9.5px; }
       th, td { height: 22px; padding: 2px 1px; border-color: #64748b; }
       .name-input { font-size: 9.5px; }
+      .name-input::placeholder { color: transparent; }
       .status-P { background: transparent !important; color: #000; }
       .status-A { background: #f1f5f9 !important; color: #000; }
       .status-L { background: transparent !important; color: #000; }
@@ -126,19 +128,19 @@
 <body>
 
 <div class="paper-sheet">
-  <!-- Screen Tooling Bar -->
+  <!-- Toolbar Controls -->
   <div class="toolbar">
     <label><strong>Month:</strong> <input type="month" id="selectedMonth" value="2026-10" onchange="generateMonth()"></label>
     <label><strong>Class Name:</strong> <input type="text" id="courseInput" value="Online Batch Sessions" oninput="updateTitles()"></label>
-    <button class="btn-action" onclick="addRow()">+ Add Participant Row</button>
+    <button class="btn-action" onclick="addRow()">+ Add Participant</button>
     <button class="btn-print" onclick="window.print()">Print / Export PDF</button>
   </div>
 
-  <!-- Print Header -->
+  <!-- Sheet Header -->
   <div class="sheet-header">
     <div>
       <h1 class="sheet-title" id="displayCourse">Online Batch Sessions</h1>
-      <span class="sheet-subtitle">Daily Attendance Sheet (1 Session / Day)</span>
+      <span class="sheet-subtitle">Daily Attendance Sheet (Click cell to toggle status)</span>
     </div>
     <div style="text-align: right;">
       <strong id="displayPeriod" style="font-size: 15px;">October 2026</strong>
@@ -146,7 +148,7 @@
     </div>
   </div>
 
-  <!-- Table -->
+  <!-- Attendance Table -->
   <div class="table-wrapper">
     <table id="attendanceGrid">
       <colgroup id="colGroup"></colgroup>
@@ -161,28 +163,33 @@
 <script>
   let daysInMonth = 31;
   let year = 2026;
-  let month = 9; // 0-indexed (9 = Oct)
+  let month = 9; // October (0-indexed)
 
-  // Initial structure: 12 editable participant slots
-  let participants = Array.from({ length: 12 }, () => ({
-    name: "",
-    days: []
-  }));
+  // Starts with just ONE participant
+  let participants = [
+    { name: "", days: [] }
+  ];
 
   const cycle = { "": "P", "P": "A", "A": "L", "L": "" };
   const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
   function generateMonth() {
     const picker = document.getElementById("selectedMonth").value.split("-");
-    year = parseInt(picker[0]);
-    month = parseInt(picker[1]) - 1;
+    year = parseInt(picker[0], 10);
+    month = parseInt(picker[1], 10) - 1;
 
     daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    // Resize record rows to match calendar days
+    // Ensure all participant records match the days in this month
     participants.forEach(p => {
-      if (p.days.length !== daysInMonth) {
-        p.days = Array(daysInMonth).fill("");
+      if (!p.days || p.days.length !== daysInMonth) {
+        let newDays = Array(daysInMonth).fill("");
+        if (p.days) {
+          for (let i = 0; i < Math.min(p.days.length, daysInMonth); i++) {
+            newDays[i] = p.days[i];
+          }
+        }
+        p.days = newDays;
       }
     });
 
@@ -191,13 +198,13 @@
   }
 
   function renderGrid() {
-    // 1. Column definitions
+    // 1. Column layout
     let colHtml = `<col class="col-no"><col class="col-name">`;
     for (let d = 1; d <= daysInMonth; d++) colHtml += `<col class="col-day">`;
     colHtml += `<col class="col-stat"><col class="col-stat"><col class="col-act">`;
     document.getElementById("colGroup").innerHTML = colHtml;
 
-    // 2. Header Row
+    // 2. Table Headers
     let headHtml = `<th>#</th><th style="text-align:left; padding-left:6px;">Participant Name</th>`;
     for (let d = 1; d <= daysInMonth; d++) {
       let dayOfWeek = weekdays[new Date(year, month, d).getDay()];
@@ -223,7 +230,7 @@
 
       let rowHtml = `<td>${rIdx + 1}</td>
         <td style="text-align: left; padding: 0 4px;">
-          <input class="name-input" type="text" placeholder="Click to enter name..." 
+          <input class="name-input" type="text" placeholder="Type participant name..." 
                  value="${escapeHtml(p.name)}" 
                  oninput="participants[${rIdx}].name = this.value">
         </td>`;
@@ -238,7 +245,7 @@
 
       rowHtml += `<td><strong>${pCount}</strong></td>
                   <td>${rate}%</td>
-                  <td class="col-act"><button class="btn-del" onclick="deleteRow(${rIdx})" style="color:#ef4444;border:none;background:none;cursor:pointer;">✕</button></td>`;
+                  <td class="col-act"><button class="btn-del" onclick="deleteRow(${rIdx})" title="Delete" style="color:#ef4444;border:none;background:none;cursor:pointer;font-weight:bold;">✕</button></td>`;
 
       tr.innerHTML = rowHtml;
       tbody.appendChild(tr);
@@ -257,7 +264,12 @@
   }
 
   function deleteRow(idx) {
-    participants.splice(idx, 1);
+    if (participants.length <= 1) {
+      // Clear instead of removing if it's the last row
+      participants[0] = { name: "", days: Array(daysInMonth).fill("") };
+    } else {
+      participants.splice(idx, 1);
+    }
     renderGrid();
   }
 
@@ -271,7 +283,7 @@
     return text.replace(/"/g, "&quot;");
   }
 
-  // Initial boot
+  // Initialize on load
   generateMonth();
 </script>
 
