@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Monthly Attendance Sheet</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --bg: #f8fafc;
+      --border: #cbd5e1;
+      --present: #dcfce7;
+      --present-text: #15803d;
+      --absent: #fee2e2;
+      --absent-text: #b91c1c;
+      --late: #fef3c7;
+      --late-text: #b45309;
+    }
+
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); margin: 0; padding: 24px; color: #1e293b; }
+    .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+
+    /* Control Panel (Hidden during print) */
+    .controls { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
+    .controls input, .controls select, .controls button {
+      padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;
+    }
+    .btn-primary { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; }
+    .btn-secondary { background: #e2e8f0; color: #334155; border: none; cursor: pointer; }
+    .btn-print { background: #059669; color: white; border: none; cursor: pointer; margin-left: auto; }
+
+    /* Print Document Header */
+    .sheet-header { border-bottom: 2px solid var(--primary); padding-bottom: 16px; margin-bottom: 20px; }
+    .sheet-title { font-size: 22px; font-weight: 700; margin: 0 0 6px 0; color: var(--primary); }
+    .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: 13px; }
+    .meta-item strong { display: block; color: #64748b; font-size: 11px; text-transform: uppercase; }
+
+    /* Table Styling */
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: center; }
+    th { background: #f1f5f9; font-weight: 600; }
+    td.name-col, th.name-col { text-align: left; width: 220px; }
+
+    /* Status Badges */
+    .status-badge {
+      display: inline-block; width: 28px; height: 28px; line-height: 28px;
+      border-radius: 4px; font-weight: bold; cursor: pointer; user-select: none;
+    }
+    .status-P { background: var(--present); color: var(--present-text); }
+    .status-A { background: var(--absent); color: var(--absent-text); }
+    .status-L { background: var(--late); color: var(--late-text); }
+
+    /* Print Styles */
+    @media print {
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; padding: 0; max-width: 100%; }
+      .controls, .delete-btn { display: none !important; }
+      th, td { border-color: #94a3b8; }
+      @page { size: landscape; margin: 12mm; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="controls">
+    <input type="text" id="courseName" placeholder="Course Name" value="Online Certificate Program">
+    <input type="month" id="monthPicker" value="2026-10">
+    <input type="text" id="newStudent" placeholder="Participant Name">
+    <button class="btn-primary" onclick="addStudent()">Add Student</button>
+    <button class="btn-secondary" onclick="addSession()">+ Add Session Day</button>
+    <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+  </div>
+
+  <div class="sheet-header">
+    <h1 class="sheet-title" id="displayCourse">Online Certificate Program</h1>
+    <div class="meta-grid">
+      <div class="meta-item"><strong>Billing / Report Period</strong><span id="displayMonth">October 2026</span></div>
+      <div class="meta-item"><strong>Total Sessions</strong><span id="displaySessions">4</span></div>
+      <div class="meta-item"><strong>Enrolled Learners</strong><span id="displayStudents">3</span></div>
+      <div class="meta-item"><strong>Avg. Attendance</strong><span id="displayAvg">0%</span></div>
+    </div>
+  </div>
+
+  <table id="attendanceTable">
+    <thead>
+      <tr id="headerRow">
+        <th class="name-col">Participant</th>
+        <!-- Dynamic session headers will appear here -->
+        <th>Present</th>
+        <th>Rate</th>
+        <th class="delete-btn">Action</th>
+      </tr>
+    </thead>
+    <tbody id="studentRows">
+      <!-- Dynamic student rows will appear here -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  let sessions = ['Session 1', 'Session 2', 'Session 3', 'Session 4'];
+  let students = [
+    { name: 'Alex Johnson', attendance: ['P', 'P', 'L', 'P'] },
+    { name: 'Priya Sharma', attendance: ['P', 'A', 'P', 'P'] },
+    { name: 'Marcus Chen', attendance: ['P', 'P', 'P', 'A'] }
+  ];
+
+  const cycleStatus = { 'P': 'A', 'A': 'L', 'L': 'P' };
+
+  function renderTable() {
+    const headerRow = document.getElementById('headerRow');
+    const tbody = document.getElementById('studentRows');
+
+    // Build header columns
+    headerRow.innerHTML = `<th class="name-col">Participant</th>` +
+      sessions.map((s, idx) => `<th>${s}</th>`).join('') +
+      `<th>Present</th><th>Rate</th><th class="delete-btn">Action</th>`;
+
+    // Build participant rows
+    tbody.innerHTML = students.map((st, rIdx) => {
+      const pCount = st.attendance.filter(a => a === 'P').length;
+      const rate = sessions.length ? Math.round((pCount / sessions.length) * 100) : 0;
+      
+      const sessionCells = st.attendance.map((status, cIdx) => 
+        `<td><span class="status-badge status-${status}" onclick="toggleStatus(${rIdx}, ${cIdx})">${status}</span></td>`
+      ).join('');
+
+      return `<tr>
+        <td class="name-col"><strong>${st.name}</strong></td>
+        ${sessionCells}
+        <td><strong>${pCount}</strong> / ${sessions.length}</td>
+        <td><strong>${rate}%</strong></td>
+        <td class="delete-btn"><button onclick="removeStudent(${rIdx})" style="color:red;border:none;background:none;cursor:pointer;">✕</button></td>
+      </tr>`;
+    }).join('');
+
+    updateStats();
+  }
+
+  function toggleStatus(row, col) {
+    students[row].attendance[col] = cycleStatus[students[row].attendance[col]] || 'P';
+    renderTable();
+  }
+
+  function addStudent() {
+    const input = document.getElementById('newStudent');
+    if (!input.value.trim()) return;
+    students.push({
+      name: input.value.trim(),
+      attendance: Array(sessions.length).fill('P')
+    });
+    input.value = '';
+    renderTable();
+  }
+
+  function removeStudent(index) {
+    students.splice(index, 1);
+    renderTable();
+  }
+
+  function addSession() {
+    sessions.push(`Session ${sessions.length + 1}`);
+    students.forEach(st => st.attendance.push('P'));
+    renderTable();
+  }
+
+  function updateStats() {
+    document.getElementById('displayCourse').innerText = document.getElementById('courseName').value;
+    
+    const [y, m] = document.getElementById('monthPicker').value.split('-');
+    const dateObj = new Date(y, m - 1);
+    document.getElementById('displayMonth').innerText = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
+    
+    document.getElementById('displaySessions').innerText = sessions.length;
+    document.getElementById('displayStudents').innerText = students.length;
+
+    let totalPossible = students.length * sessions.length;
+    let totalPresent = students.reduce((acc, st) => acc + st.attendance.filter(a => a === 'P').length, 0);
+    let avg = totalPossible ? Math.round((totalPresent / totalPossible) * 100) : 0;
+    document.getElementById('displayAvg').innerText = `${avg}%`;
+  }
+
+  document.getElementById('courseName').addEventListener('input', updateStats);
+  document.getElementById('monthPicker').addEventListener('change', updateStats);
+
+  renderTable();
+</script>
+</body>
+</html>
