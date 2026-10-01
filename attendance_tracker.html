@@ -5,186 +5,275 @@
   <title>Monthly Attendance Sheet</title>
   <style>
     :root {
-      --primary: #1e3a8a;
+      --primary: #1e293b;
+      --border: #94a3b8;
       --bg: #f8fafc;
-      --border: #cbd5e1;
-      --present: #dcfce7;
-      --present-text: #15803d;
-      --absent: #fee2e2;
-      --absent-text: #b91c1c;
-      --late: #fef3c7;
-      --late-text: #b45309;
+      --weekend-bg: #f1f5f9;
+      --p-color: #166534;
+      --a-color: #991b1b;
+      --l-color: #854d0e;
     }
 
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background: var(--bg); margin: 0; padding: 24px; color: #1e293b; }
-    .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 32px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    body { background: var(--bg); margin: 0; padding: 20px; color: #0f172a; }
 
-    /* Control Panel (Hidden during print) */
-    .controls { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
-    .controls input, .controls select, .controls button {
-      padding: 8px 14px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px;
+    .paper-sheet {
+      max-width: 1300px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 24px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
     }
-    .btn-primary { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: 600; }
-    .btn-secondary { background: #e2e8f0; color: #334155; border: none; cursor: pointer; }
-    .btn-print { background: #059669; color: white; border: none; cursor: pointer; margin-left: auto; }
 
-    /* Print Document Header */
-    .sheet-header { border-bottom: 2px solid var(--primary); padding-bottom: 16px; margin-bottom: 20px; }
-    .sheet-title { font-size: 22px; font-weight: 700; margin: 0 0 6px 0; color: var(--primary); }
-    .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; font-size: 13px; }
-    .meta-item strong { display: block; color: #64748b; font-size: 11px; text-transform: uppercase; }
-
-    /* Table Styling */
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: center; }
-    th { background: #f1f5f9; font-weight: 600; }
-    td.name-col, th.name-col { text-align: left; width: 220px; }
-
-    /* Status Badges */
-    .status-badge {
-      display: inline-block; width: 28px; height: 28px; line-height: 28px;
-      border-radius: 4px; font-weight: bold; cursor: pointer; user-select: none;
+    /* Screen UI Controls */
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: #f1f5f9;
+      padding: 12px 16px;
+      border-radius: 6px;
     }
-    .status-P { background: var(--present); color: var(--present-text); }
-    .status-A { background: var(--absent); color: var(--absent-text); }
-    .status-L { background: var(--late); color: var(--late-text); }
+    .toolbar input, .toolbar button {
+      padding: 6px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .btn-action { background: #0284c7; color: white; border: none; cursor: pointer; font-weight: 600; }
+    .btn-print { background: #059669; color: white; border: none; cursor: pointer; font-weight: 600; margin-left: auto; }
 
-    /* Print Styles */
+    /* Print Header */
+    .sheet-header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .sheet-title { margin: 0; font-size: 20px; font-weight: 700; color: var(--primary); }
+    .sheet-subtitle { font-size: 13px; color: #475569; }
+
+    /* Attendance Grid */
+    .table-wrapper { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      text-align: center;
+      padding: 4px 2px;
+      height: 26px;
+    }
+    th { background: #f8fafc; font-weight: 600; }
+    
+    col.col-no { width: 32px; }
+    col.col-name { width: 200px; }
+    col.col-day { width: auto; }
+    col.col-stat { width: 44px; }
+    col.col-act { width: 30px; }
+
+    /* Day columns and cell inputs */
+    .day-num { font-size: 11px; }
+    .day-name { font-size: 8px; text-transform: uppercase; color: #64748b; }
+    .weekend { background-color: var(--weekend-bg); }
+
+    .name-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 2px 4px;
+      font-size: 11px;
+      outline: none;
+    }
+    .name-input:focus { background: #e2e8f0; }
+
+    .status-cell {
+      cursor: pointer;
+      font-weight: 700;
+      user-select: none;
+      font-size: 11px;
+    }
+    .status-P { color: var(--p-color); background: #dcfce7; }
+    .status-A { color: var(--a-color); background: #fee2e2; }
+    .status-L { color: var(--l-color); background: #fef3c7; }
+
+    /* Print View Setup */
     @media print {
       body { background: white; padding: 0; }
-      .container { box-shadow: none; padding: 0; max-width: 100%; }
-      .controls, .delete-btn { display: none !important; }
-      th, td { border-color: #94a3b8; }
-      @page { size: landscape; margin: 12mm; }
+      .paper-sheet { border: none; padding: 0; max-width: 100%; }
+      .toolbar, .col-act, .btn-del { display: none !important; }
+      table { font-size: 9.5px; }
+      th, td { height: 22px; padding: 2px 1px; border-color: #64748b; }
+      .name-input { font-size: 9.5px; }
+      .status-P { background: transparent !important; color: #000; }
+      .status-A { background: #f1f5f9 !important; color: #000; }
+      .status-L { background: transparent !important; color: #000; }
+      @page {
+        size: A4 landscape;
+        margin: 8mm;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="controls">
-    <input type="text" id="courseName" placeholder="Course Name" value="Online Certificate Program">
-    <input type="month" id="monthPicker" value="2026-10">
-    <input type="text" id="newStudent" placeholder="Participant Name">
-    <button class="btn-primary" onclick="addStudent()">Add Student</button>
-    <button class="btn-secondary" onclick="addSession()">+ Add Session Day</button>
-    <button class="btn-print" onclick="window.print()">Print / Save PDF</button>
+<div class="paper-sheet">
+  <!-- Screen Tooling Bar -->
+  <div class="toolbar">
+    <label><strong>Month:</strong> <input type="month" id="selectedMonth" value="2026-10" onchange="generateMonth()"></label>
+    <label><strong>Class Name:</strong> <input type="text" id="courseInput" value="Online Batch Sessions" oninput="updateTitles()"></label>
+    <button class="btn-action" onclick="addRow()">+ Add Participant Row</button>
+    <button class="btn-print" onclick="window.print()">Print / Export PDF</button>
   </div>
 
+  <!-- Print Header -->
   <div class="sheet-header">
-    <h1 class="sheet-title" id="displayCourse">Online Certificate Program</h1>
-    <div class="meta-grid">
-      <div class="meta-item"><strong>Billing / Report Period</strong><span id="displayMonth">October 2026</span></div>
-      <div class="meta-item"><strong>Total Sessions</strong><span id="displaySessions">4</span></div>
-      <div class="meta-item"><strong>Enrolled Learners</strong><span id="displayStudents">3</span></div>
-      <div class="meta-item"><strong>Avg. Attendance</strong><span id="displayAvg">0%</span></div>
+    <div>
+      <h1 class="sheet-title" id="displayCourse">Online Batch Sessions</h1>
+      <span class="sheet-subtitle">Daily Attendance Sheet (1 Session / Day)</span>
+    </div>
+    <div style="text-align: right;">
+      <strong id="displayPeriod" style="font-size: 15px;">October 2026</strong>
+      <div class="sheet-subtitle">P = Present, A = Absent, L = Late</div>
     </div>
   </div>
 
-  <table id="attendanceTable">
-    <thead>
-      <tr id="headerRow">
-        <th class="name-col">Participant</th>
-        <!-- Dynamic session headers will appear here -->
-        <th>Present</th>
-        <th>Rate</th>
-        <th class="delete-btn">Action</th>
-      </tr>
-    </thead>
-    <tbody id="studentRows">
-      <!-- Dynamic student rows will appear here -->
-    </tbody>
-  </table>
+  <!-- Table -->
+  <div class="table-wrapper">
+    <table id="attendanceGrid">
+      <colgroup id="colGroup"></colgroup>
+      <thead>
+        <tr id="headRow"></tr>
+      </thead>
+      <tbody id="bodyRows"></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
-  let sessions = ['Session 1', 'Session 2', 'Session 3', 'Session 4'];
-  let students = [
-    { name: 'Alex Johnson', attendance: ['P', 'P', 'L', 'P'] },
-    { name: 'Priya Sharma', attendance: ['P', 'A', 'P', 'P'] },
-    { name: 'Marcus Chen', attendance: ['P', 'P', 'P', 'A'] }
-  ];
+  let daysInMonth = 31;
+  let year = 2026;
+  let month = 9; // 0-indexed (9 = Oct)
 
-  const cycleStatus = { 'P': 'A', 'A': 'L', 'L': 'P' };
+  // Initial structure: 12 editable participant slots
+  let participants = Array.from({ length: 12 }, () => ({
+    name: "",
+    days: []
+  }));
 
-  function renderTable() {
-    const headerRow = document.getElementById('headerRow');
-    const tbody = document.getElementById('studentRows');
+  const cycle = { "": "P", "P": "A", "A": "L", "L": "" };
+  const weekdays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-    // Build header columns
-    headerRow.innerHTML = `<th class="name-col">Participant</th>` +
-      sessions.map((s, idx) => `<th>${s}</th>`).join('') +
-      `<th>Present</th><th>Rate</th><th class="delete-btn">Action</th>`;
+  function generateMonth() {
+    const picker = document.getElementById("selectedMonth").value.split("-");
+    year = parseInt(picker[0]);
+    month = parseInt(picker[1]) - 1;
 
-    // Build participant rows
-    tbody.innerHTML = students.map((st, rIdx) => {
-      const pCount = st.attendance.filter(a => a === 'P').length;
-      const rate = sessions.length ? Math.round((pCount / sessions.length) * 100) : 0;
-      
-      const sessionCells = st.attendance.map((status, cIdx) => 
-        `<td><span class="status-badge status-${status}" onclick="toggleStatus(${rIdx}, ${cIdx})">${status}</span></td>`
-      ).join('');
+    daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      return `<tr>
-        <td class="name-col"><strong>${st.name}</strong></td>
-        ${sessionCells}
-        <td><strong>${pCount}</strong> / ${sessions.length}</td>
-        <td><strong>${rate}%</strong></td>
-        <td class="delete-btn"><button onclick="removeStudent(${rIdx})" style="color:red;border:none;background:none;cursor:pointer;">✕</button></td>
-      </tr>`;
-    }).join('');
-
-    updateStats();
-  }
-
-  function toggleStatus(row, col) {
-    students[row].attendance[col] = cycleStatus[students[row].attendance[col]] || 'P';
-    renderTable();
-  }
-
-  function addStudent() {
-    const input = document.getElementById('newStudent');
-    if (!input.value.trim()) return;
-    students.push({
-      name: input.value.trim(),
-      attendance: Array(sessions.length).fill('P')
+    // Resize record rows to match calendar days
+    participants.forEach(p => {
+      if (p.days.length !== daysInMonth) {
+        p.days = Array(daysInMonth).fill("");
+      }
     });
-    input.value = '';
-    renderTable();
+
+    renderGrid();
+    updateTitles();
   }
 
-  function removeStudent(index) {
-    students.splice(index, 1);
-    renderTable();
+  function renderGrid() {
+    // 1. Column definitions
+    let colHtml = `<col class="col-no"><col class="col-name">`;
+    for (let d = 1; d <= daysInMonth; d++) colHtml += `<col class="col-day">`;
+    colHtml += `<col class="col-stat"><col class="col-stat"><col class="col-act">`;
+    document.getElementById("colGroup").innerHTML = colHtml;
+
+    // 2. Header Row
+    let headHtml = `<th>#</th><th style="text-align:left; padding-left:6px;">Participant Name</th>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      let dayOfWeek = weekdays[new Date(year, month, d).getDay()];
+      let isWeekend = (dayOfWeek === 'Sa' || dayOfWeek === 'Su') ? 'weekend' : '';
+      headHtml += `<th class="${isWeekend}">
+        <div class="day-num">${d}</div>
+        <div class="day-name">${dayOfWeek}</div>
+      </th>`;
+    }
+    headHtml += `<th>Pres</th><th>%</th><th class="col-act"></th>`;
+    document.getElementById("headRow").innerHTML = headHtml;
+
+    // 3. Body Rows
+    const tbody = document.getElementById("bodyRows");
+    tbody.innerHTML = "";
+
+    participants.forEach((p, rIdx) => {
+      const tr = document.createElement("tr");
+
+      let pCount = p.days.filter(v => v === "P").length;
+      let totalMarked = p.days.filter(v => v !== "").length;
+      let rate = totalMarked > 0 ? Math.round((pCount / totalMarked) * 100) : 0;
+
+      let rowHtml = `<td>${rIdx + 1}</td>
+        <td style="text-align: left; padding: 0 4px;">
+          <input class="name-input" type="text" placeholder="Click to enter name..." 
+                 value="${escapeHtml(p.name)}" 
+                 oninput="participants[${rIdx}].name = this.value">
+        </td>`;
+
+      for (let d = 0; d < daysInMonth; d++) {
+        let dayOfWeek = weekdays[new Date(year, month, d + 1).getDay()];
+        let isWeekend = (dayOfWeek === 'Sa' || dayOfWeek === 'Su') ? 'weekend' : '';
+        let val = p.days[d] || "";
+        let statusClass = val ? `status-${val}` : "";
+        rowHtml += `<td class="status-cell ${isWeekend} ${statusClass}" onclick="toggleCell(${rIdx}, ${d})">${val}</td>`;
+      }
+
+      rowHtml += `<td><strong>${pCount}</strong></td>
+                  <td>${rate}%</td>
+                  <td class="col-act"><button class="btn-del" onclick="deleteRow(${rIdx})" style="color:#ef4444;border:none;background:none;cursor:pointer;">✕</button></td>`;
+
+      tr.innerHTML = rowHtml;
+      tbody.appendChild(tr);
+    });
   }
 
-  function addSession() {
-    sessions.push(`Session ${sessions.length + 1}`);
-    students.forEach(st => st.attendance.push('P'));
-    renderTable();
+  function toggleCell(row, day) {
+    const current = participants[row].days[day] || "";
+    participants[row].days[day] = cycle[current];
+    renderGrid();
   }
 
-  function updateStats() {
-    document.getElementById('displayCourse').innerText = document.getElementById('courseName').value;
-    
-    const [y, m] = document.getElementById('monthPicker').value.split('-');
-    const dateObj = new Date(y, m - 1);
-    document.getElementById('displayMonth').innerText = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
-    
-    document.getElementById('displaySessions').innerText = sessions.length;
-    document.getElementById('displayStudents').innerText = students.length;
-
-    let totalPossible = students.length * sessions.length;
-    let totalPresent = students.reduce((acc, st) => acc + st.attendance.filter(a => a === 'P').length, 0);
-    let avg = totalPossible ? Math.round((totalPresent / totalPossible) * 100) : 0;
-    document.getElementById('displayAvg').innerText = `${avg}%`;
+  function addRow() {
+    participants.push({ name: "", days: Array(daysInMonth).fill("") });
+    renderGrid();
   }
 
-  document.getElementById('courseName').addEventListener('input', updateStats);
-  document.getElementById('monthPicker').addEventListener('change', updateStats);
+  function deleteRow(idx) {
+    participants.splice(idx, 1);
+    renderGrid();
+  }
 
-  renderTable();
+  function updateTitles() {
+    document.getElementById("displayCourse").innerText = document.getElementById("courseInput").value || "Attendance Sheet";
+    const dateObj = new Date(year, month);
+    document.getElementById("displayPeriod").innerText = dateObj.toLocaleString('default', { month: 'long', year: 'numeric' });
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/"/g, "&quot;");
+  }
+
+  // Initial boot
+  generateMonth();
 </script>
+
 </body>
 </html>
